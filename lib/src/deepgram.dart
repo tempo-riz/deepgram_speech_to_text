@@ -45,8 +45,18 @@ class Deepgram {
   /// Transcribe a remote audio file from URL. Returns the transcription as a JSON string.
   ///
   /// https://developers.deepgram.com/reference/listen-remote
-  Future<String> transcribeFromUrl(String url, Map<String, dynamic>? queryParams) async {
-    return "";
+  Future<String> transcribeFromUrl(String url, {Map<String, dynamic>? queryParams}) async {
+    http.Response res = await http.post(
+      _buildUrl(queryParams),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token $apiKey',
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.acceptHeader: 'application/json',
+      },
+      body: jsonEncode({'url': url}),
+    );
+
+    return res.body;
   }
 }
 
