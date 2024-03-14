@@ -3,6 +3,8 @@
 /// More dartdocs go here.
 library;
 
-export 'src/deepgram_speech_to_text_base.dart';
+export 'src/deepgram.dart';
 
 // TODO: Export any libraries intended for clients of this package.
+
+// ref : https://github.com/rrousselGit/riverpod/tree/master/packages/riverpod/lib
