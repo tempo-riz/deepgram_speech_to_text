@@ -7,7 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 void main() {
-  group('[API testing]', () {
+  group('[API]', () {
     final env = DotEnv()..load();
 
     final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
@@ -56,6 +56,33 @@ void main() {
       Map<String, dynamic> map = jsonDecode(json);
 
       String transcript = map['results']['channels'][0]['alternatives'][0]['transcript'];
+      expect(transcript, isNotEmpty);
+    });
+
+    test('liveTranscription', () async {
+      final file = File('assets/jfk.wav');
+
+      expect(file.existsSync(), isTrue);
+
+      Stream<List<int>> audioStream = file.openRead();
+
+      final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(audioStream);
+
+      String transcript = '';
+
+      transcriber.resultStream.listen((json) {
+        Map<String, dynamic> map = jsonDecode(json);
+        String currentTranscript = map['channel']['alternatives'][0]['transcript'];
+
+        transcript += currentTranscript;
+      });
+
+      await transcriber.start();
+
+      await Future.delayed(Duration(seconds: 5));
+
+      await transcriber.stop();
+
       expect(transcript, isNotEmpty);
     });
   });
