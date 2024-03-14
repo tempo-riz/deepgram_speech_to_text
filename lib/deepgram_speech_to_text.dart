@@ -1,7 +1,8 @@
-library deepgram_speech_to_text;
+/// Support for doing something awesome.
+///
+/// More dartdocs go here.
+library;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/deepgram_speech_to_text_base.dart';
+
+// TODO: Export any libraries intended for clients of this package.
