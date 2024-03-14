@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
@@ -59,7 +60,7 @@ void main() {
       expect(transcript, isNotEmpty);
     });
 
-    test('liveTranscription', () async {
+    test('createLiveTranscriber', () async {
       final file = File('assets/jfk.wav');
 
       expect(file.existsSync(), isTrue);
@@ -70,18 +71,54 @@ void main() {
 
       String transcript = '';
 
-      transcriber.resultStream.listen((json) {
+      StreamSubscription sub = transcriber.resultStream.listen((json) {
         Map<String, dynamic> map = jsonDecode(json);
-        String currentTranscript = map['channel']['alternatives'][0]['transcript'];
-
-        transcript += currentTranscript;
+        try {
+          String currentTranscript = map['channel']['alternatives'][0]['transcript'];
+          print('Transcript: $currentTranscript');
+          transcript += currentTranscript;
+        } catch (e) {
+          print(e);
+        }
+      }, onDone: () {
+        transcriber.stop();
+        expect(transcript, isNotEmpty);
+        print('Done');
+        print('Transcript: $transcript');
+      }, onError: (error) {
+        print('Error: $error');
       });
 
       await transcriber.start();
 
-      await Future.delayed(Duration(seconds: 5));
+      await sub.asFuture();
+      print("done2");
+    });
 
-      await transcriber.stop();
+    test('transcribeFromLiveAudioStream', () async {
+      final file = File('assets/jfk.wav');
+
+      expect(file.existsSync(), isTrue);
+
+      Stream<List<int>> audioStream = file.openRead();
+
+      final Stream<String> resultStream = deepgram.transcribeFromLiveAudioStream(audioStream);
+
+      String transcript = '';
+
+      StreamSubscription sub = resultStream.listen((json) {
+        Map<String, dynamic> map = jsonDecode(json);
+        try {
+          String currentTranscript = map['channel']['alternatives'][0]['transcript'];
+          print('Transcript: $currentTranscript');
+          transcript += currentTranscript;
+        } catch (e) {
+          print(e);
+        }
+      });
+
+      await sub.asFuture();
+      print("done2");
 
       expect(transcript, isNotEmpty);
     });

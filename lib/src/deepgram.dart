@@ -19,7 +19,7 @@ class DeepgramLiveTranscriber {
     _channelSubscription = channel.stream.listen((event) {
       _outputTranscriptStream.add(event.toString());
     }, onDone: () {
-      _outputTranscriptStream.close();
+      stop();
     }, onError: (error) {
       _outputTranscriptStream.addError(error);
     });
@@ -106,5 +106,12 @@ class Deepgram {
     );
 
     return DeepgramLiveTranscriber(channel, audioStream);
+  }
+
+  Stream<String> transcribeFromLiveAudioStream(Stream<List<int>> audioStream, {Map<String, String>? queryParams}) {
+    DeepgramLiveTranscriber transcriber = createLiveTranscriber(audioStream, queryParams: queryParams);
+
+    transcriber.start();
+    return transcriber.resultStream;
   }
 }
