@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
@@ -9,12 +10,22 @@ class Deepgram {
   final String apiKey;
   final String _baseUrl = 'https://api.deepgram.com/v1/listen';
 
+  /// Builds a URL with query parameters.
+  Uri _buildUrl(Map<String, dynamic>? queryParams) {
+    if (queryParams == null) {
+      return Uri.parse(_baseUrl);
+    }
+    final uri = Uri.parse(_baseUrl);
+    final newUri = uri.replace(queryParameters: queryParams);
+    return newUri;
+  }
+
   /// Transcribe a local audio file. Returns the transcription as a JSON string.
   ///
   /// https://developers.deepgram.com/reference/listen-file
   Future<String> transcribeFromBytes(List<int> data, {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      Uri.parse(_baseUrl),
+      _buildUrl(queryParams),
       headers: {
         HttpHeaders.authorizationHeader: 'Token $apiKey',
       },
@@ -22,6 +33,13 @@ class Deepgram {
     );
 
     return res.body;
+  }
+
+  Future<String> transcribeFromFile(File file, {Map<String, dynamic>? queryParams}) {
+    assert(file.existsSync());
+    final Uint8List bytes = file.readAsBytesSync();
+
+    return transcribeFromBytes(bytes, queryParams: queryParams);
   }
 
   /// Transcribe a remote audio file from URL. Returns the transcription as a JSON string.

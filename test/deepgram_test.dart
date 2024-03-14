@@ -29,7 +29,20 @@ void main() {
 
       // Extract the transcript
       String transcript = map['results']['channels'][0]['alternatives'][0]['transcript'];
-      print('Transcript: $transcript');
+      expect(transcript, isNotEmpty);
+    });
+
+    test('transcribeFromFile', () async {
+      final file = File('assets/jfk.wav');
+
+      expect(file.existsSync(), isTrue);
+
+      final json = await deepgram.transcribeFromFile(file);
+
+      // Parse the JSON response
+      Map<String, dynamic> map = jsonDecode(json);
+
+      String transcript = map['results']['channels'][0]['alternatives'][0]['transcript'];
       expect(transcript, isNotEmpty);
     });
   });
