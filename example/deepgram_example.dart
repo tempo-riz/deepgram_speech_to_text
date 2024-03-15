@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:deepgram_speech_to_text/deepgram.dart';
+import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
 
 void main() async {
   // Get your API key from the Deepgram console if you don't have one https://console.deepgram.com/
@@ -11,7 +11,7 @@ void main() async {
   // reference : https://developers.deepgram.com/reference/listen-file
   Map<String, dynamic> params = {
     'model': 'nova-2-general',
-    'language': 'latest',
+    'language': 'fr',
     'filler_words': false,
     'punctuation': true,
   };
@@ -50,6 +50,5 @@ void main() async {
   transcriber.jsonStream.listen((json) {
     print(json);
   });
-
   transcriber.close();
 }

@@ -1,22 +1,19 @@
 name: deepgram_speech_to_text
-description: A starting point for Dart libraries or applications.
+description: A simple Deepgram client for Dart and Flutter.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/tempo-riz/deepgram_speech_to_text
 
 environment:
   sdk: ^3.2.6
 
-# Add regular dependencies here.
 dependencies:
-  dotenv: ^4.2.0
   http: ^1.2.0
   web_socket_channel: ^2.4.0
-  # path: ^1.8.0
 
 dev_dependencies:
   lints: ^2.1.0
   test: ^1.24.0
-  flutter_dotenv: ^5.1.0
+  dotenv: ^4.2.0
 
 assets:
   - .env
