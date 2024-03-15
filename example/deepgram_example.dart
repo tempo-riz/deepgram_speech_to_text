@@ -15,7 +15,7 @@ void main() async {
 
   final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(audioStream);
 
-  transcriber.resultStream.listen((json) {
+  transcriber.jsonStream.listen((json) {
     print('JSON: $json');
     Map<String, dynamic> map = jsonDecode(json);
     String transcript = map['channel']['alternatives'][0]['transcript'];
@@ -31,5 +31,5 @@ void main() async {
 
   await Future.delayed(Duration(seconds: 5));
 
-  await transcriber.stop();
+  await transcriber.close();
 }

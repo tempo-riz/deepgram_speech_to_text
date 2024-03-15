@@ -14,6 +14,29 @@ void main() {
     final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
+    /// [simulating a live stream]
+    /// read the file content once then create a stream with a loop of its content
+    StreamController<List<int>> getAudioStreamController() {
+      final file = File('assets/jfk.wav');
+      assert(file.existsSync(), 'File does not exist');
+
+      Uint8List bytes = file.readAsBytesSync();
+
+      StreamController<List<int>> controller = StreamController<List<int>>();
+
+      // Instead of piping the dummyAudioStream into the controller,
+      // directly add data to the controller
+      Timer.periodic(Duration(seconds: 1), (timer) {
+        if (!controller.isClosed) {
+          controller.add(bytes);
+        } else {
+          timer.cancel(); // Stop timer if the controller is closed
+        }
+      });
+
+      return controller;
+    }
+
     test('transcribeFromBytes', () async {
       final file = File('assets/jfk.wav');
 
@@ -61,64 +84,63 @@ void main() {
     });
 
     test('createLiveTranscriber', () async {
-      final file = File('assets/jfk.wav');
-
-      expect(file.existsSync(), isTrue);
-
-      Stream<List<int>> audioStream = file.openRead();
-
-      final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(audioStream);
+      final controller = getAudioStreamController();
+      print("creating transcriber");
+      final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(controller.stream);
 
       String transcript = '';
 
-      StreamSubscription sub = transcriber.resultStream.listen((json) {
-        Map<String, dynamic> map = jsonDecode(json);
+      transcriber.jsonStream.listen((json) {
         try {
+          Map<String, dynamic> map = jsonDecode(json);
           String currentTranscript = map['channel']['alternatives'][0]['transcript'];
           print('Transcript: $currentTranscript');
-          transcript += currentTranscript;
+          transcript += "$currentTranscript ";
         } catch (e) {
           print(e);
         }
-      }, onDone: () {
-        transcriber.stop();
-        expect(transcript, isNotEmpty);
-        print('Done');
-        print('Transcript: $transcript');
-      }, onError: (error) {
-        print('Error: $error');
       });
 
+      print("starting");
       await transcriber.start();
 
-      await sub.asFuture();
-      print("done2");
+      //close the stream after 8 seconds
+      await Future.delayed(Duration(seconds: 6), () {
+        print("stopping");
+        // controller.close();
+        transcriber.close();
+      });
+
+      print(transcript);
+      expect(transcript, isNotEmpty);
     });
 
     test('transcribeFromLiveAudioStream', () async {
-      final file = File('assets/jfk.wav');
+      final controller = getAudioStreamController();
+      print("creating transcriber");
 
-      expect(file.existsSync(), isTrue);
-
-      Stream<List<int>> audioStream = file.openRead();
-
-      final Stream<String> resultStream = deepgram.transcribeFromLiveAudioStream(audioStream);
+      final Stream<String> jsonStream = deepgram.transcribeFromLiveAudioStream(controller.stream);
 
       String transcript = '';
 
-      StreamSubscription sub = resultStream.listen((json) {
-        Map<String, dynamic> map = jsonDecode(json);
+      jsonStream.listen((json) {
         try {
+          Map<String, dynamic> map = jsonDecode(json);
           String currentTranscript = map['channel']['alternatives'][0]['transcript'];
           print('Transcript: $currentTranscript');
-          transcript += currentTranscript;
+          transcript += "$currentTranscript ";
         } catch (e) {
           print(e);
         }
       });
 
-      await sub.asFuture();
-      print("done2");
+      //close the stream after 8 seconds
+      await Future.delayed(Duration(seconds: 6), () {
+        print("stopping");
+        // controller.close();
+        controller.close();
+      });
+      print(transcript);
 
       expect(transcript, isNotEmpty);
     });
