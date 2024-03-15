@@ -27,14 +27,16 @@ void main() {
         'filler_words': false,
         'punctuation': true,
       });
-      expect(url.toString(), 'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
+      expect(url.toString(),
+          'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
     });
   });
 
   group('[API]', () {
     final env = DotEnv()..load();
 
-    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse(
+        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     /// [simulating a live stream]
@@ -75,7 +77,8 @@ void main() {
       Map<String, dynamic> map = jsonDecode(json);
 
       // Extract the transcript
-      String transcript = map['results']['channels'][0]['alternatives'][0]['transcript'];
+      String transcript =
+          map['results']['channels'][0]['alternatives'][0]['transcript'];
       expect(transcript, isNotEmpty);
     });
 
@@ -89,7 +92,8 @@ void main() {
       // Parse the JSON response
       Map<String, dynamic> map = jsonDecode(json);
 
-      String transcript = map['results']['channels'][0]['alternatives'][0]['transcript'];
+      String transcript =
+          map['results']['channels'][0]['alternatives'][0]['transcript'];
       expect(transcript, isNotEmpty);
     });
 
@@ -102,21 +106,24 @@ void main() {
       // Parse the JSON response
       Map<String, dynamic> map = jsonDecode(json);
 
-      String transcript = map['results']['channels'][0]['alternatives'][0]['transcript'];
+      String transcript =
+          map['results']['channels'][0]['alternatives'][0]['transcript'];
       expect(transcript, isNotEmpty);
     });
 
     test('createLiveTranscriber', () async {
       final controller = getAudioStreamController();
       print("creating transcriber");
-      final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(controller.stream);
+      final DeepgramLiveTranscriber transcriber =
+          deepgram.createLiveTranscriber(controller.stream);
 
       String transcript = '';
 
       transcriber.jsonStream.listen((json) {
         try {
           Map<String, dynamic> map = jsonDecode(json);
-          String currentTranscript = map['channel']['alternatives'][0]['transcript'];
+          String currentTranscript =
+              map['channel']['alternatives'][0]['transcript'];
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {
@@ -142,14 +149,16 @@ void main() {
       final controller = getAudioStreamController();
       print("creating transcriber");
 
-      final Stream<String> jsonStream = deepgram.transcribeFromLiveAudioStream(controller.stream);
+      final Stream<String> jsonStream =
+          deepgram.transcribeFromLiveAudioStream(controller.stream);
 
       String transcript = '';
 
       jsonStream.listen((json) {
         try {
           Map<String, dynamic> map = jsonDecode(json);
-          String currentTranscript = map['channel']['alternatives'][0]['transcript'];
+          String currentTranscript =
+              map['channel']['alternatives'][0]['transcript'];
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {

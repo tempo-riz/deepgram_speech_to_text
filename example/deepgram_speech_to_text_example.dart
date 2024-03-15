@@ -25,7 +25,8 @@ void main() async {
   print(json1);
 
   // -------------------- From a URL --------------------
-  String json2 = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
+  String json2 =
+      await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
   print(json2);
 
   // -------------------- From raw data --------------------
@@ -35,7 +36,8 @@ void main() async {
   // -------------------- From a stream  --------------------
   Stream<List<int>> audioStream = audioFile.openRead(); // mic.stream ...
 
-  Stream<String> jsonStream = deepgram.transcribeFromLiveAudioStream(audioStream);
+  Stream<String> jsonStream =
+      deepgram.transcribeFromLiveAudioStream(audioStream);
 
   jsonStream.listen((json) {
     print(json);
@@ -43,7 +45,8 @@ void main() async {
 
   // if you prefer to have more control over the stream:
 
-  final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(audioStream);
+  final DeepgramLiveTranscriber transcriber =
+      deepgram.createLiveTranscriber(audioStream);
 
   transcriber.start();
 
