@@ -4,7 +4,7 @@
 Uri buildUrl(String baseUrl, Map<String, dynamic>? baseQueryParams, Map<String, dynamic>? queryParams) {
   final uri = Uri.parse(baseUrl);
 
-  final Map<String, dynamic> mergedQueryParams = mergeMaps(baseQueryParams, queryParams);
+  final Map<String, String> mergedQueryParams = mergeMaps(baseQueryParams, queryParams).map((key, value) => MapEntry(key, value.toString()));
 
   return uri.replace(queryParameters: mergedQueryParams);
 }
