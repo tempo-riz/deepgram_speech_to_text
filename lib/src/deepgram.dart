@@ -22,7 +22,7 @@ class DeepgramLiveTranscriber {
   /// Start the transcription process.
   Future<void> start() async {
     wsChannel = IOWebSocketChannel.connect(
-      buildUrl(_baseLiveUrl, queryParams),
+      buildUrl(_baseLiveUrl, null, queryParams),
       headers: {
         HttpHeaders.authorizationHeader: 'Token $apiKey',
       },
@@ -64,17 +64,22 @@ class DeepgramLiveTranscriber {
 }
 
 class Deepgram {
-  Deepgram(this.apiKey);
+  /// if same params are present in both baseQueryParams and queryParams, the value from queryParams (the method's) is used
+  Deepgram(
+    this.apiKey, {
+    this.baseQueryParams,
+  });
 
   final String apiKey;
   final String _baseUrl = 'https://api.deepgram.com/v1/listen';
+  final Map<String, dynamic>? baseQueryParams;
 
   /// Transcribe a local audio file. Returns the transcription as a JSON string.
   ///
   /// https://developers.deepgram.com/reference/listen-file
   Future<String> transcribeFromBytes(List<int> data, {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      buildUrl(_baseUrl, queryParams),
+      buildUrl(_baseUrl, baseQueryParams, queryParams),
       headers: {
         HttpHeaders.authorizationHeader: 'Token $apiKey',
       },
@@ -96,7 +101,7 @@ class Deepgram {
   /// https://developers.deepgram.com/reference/listen-remote
   Future<String> transcribeFromUrl(String url, {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      buildUrl(_baseUrl, queryParams),
+      buildUrl(_baseUrl, baseQueryParams, queryParams),
       headers: {
         HttpHeaders.authorizationHeader: 'Token $apiKey',
         HttpHeaders.contentTypeHeader: 'application/json',
@@ -114,7 +119,7 @@ class Deepgram {
   ///
   /// https://developers.deepgram.com/reference/listen-live
   DeepgramLiveTranscriber createLiveTranscriber(Stream<List<int>> audioStream, {Map<String, dynamic>? queryParams}) {
-    return DeepgramLiveTranscriber(apiKey, inputAudioStream: audioStream, queryParams: queryParams);
+    return DeepgramLiveTranscriber(apiKey, inputAudioStream: audioStream, queryParams: mergeMaps(baseQueryParams, queryParams));
   }
 
   /// Transcribe a live audio stream. Returns a stream of JSON strings.
