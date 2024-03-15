@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/status.dart' as status;
 
 class DeepgramLiveTranscriber {
+  /// Create a live transcriber with a start and close method
   DeepgramLiveTranscriber(this.apiKey,
       {required this.inputAudioStream, this.queryParams});
 
@@ -66,7 +67,7 @@ class DeepgramLiveTranscriber {
 }
 
 class Deepgram {
-  /// if same params are present in both baseQueryParams and queryParams, the value from queryParams (the method's) is used
+  /// if same params are present in both baseQueryParams and queryParams, the value from queryParams is used
   Deepgram(
     this.apiKey, {
     this.baseQueryParams,
@@ -76,7 +77,7 @@ class Deepgram {
   final String _baseUrl = 'https://api.deepgram.com/v1/listen';
   final Map<String, dynamic>? baseQueryParams;
 
-  /// Transcribe a local audio file. Returns the transcription as a JSON string.
+  /// Transcribe from raw data. Returns the transcription as a JSON string.
   ///
   /// https://developers.deepgram.com/reference/listen-file
   Future<String> transcribeFromBytes(List<int> data,
@@ -92,6 +93,9 @@ class Deepgram {
     return res.body;
   }
 
+  /// Transcribe a local audio file. Returns the transcription as a JSON string.
+  ///
+  /// https://developers.deepgram.com/reference/listen-file
   Future<String> transcribeFromFile(File file,
       {Map<String, dynamic>? queryParams}) {
     assert(file.existsSync());

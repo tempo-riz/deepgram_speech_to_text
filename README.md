@@ -9,6 +9,12 @@ For general information about developing packages, see the Dart guide for
 [creating packages](https://dart.dev/guides/libraries/create-library-packages)
 and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages). 
+
+commands :
+
+dart doc
+dart format .
+flutter pub publish --dry-run
 -->
 
 A simple Deepgram client for Dart and Flutter.  
