@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:web_socket_channel/io.dart';
