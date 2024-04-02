@@ -16,6 +16,7 @@ void main() async {
     'punctuation': true,
   };
 
+  // you can pass base params common to all requests, and add or override them in the method's params
   Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
 
   // -------------------- From a file --------------------
@@ -25,8 +26,7 @@ void main() async {
   print(json1);
 
   // -------------------- From a URL --------------------
-  String json2 =
-      await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
+  String json2 = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
   print(json2);
 
   // -------------------- From raw data --------------------
@@ -34,10 +34,15 @@ void main() async {
   print(json3);
 
   // -------------------- From a stream  --------------------
+  // for example : from a microphone https://pub.dev/packages/record (other packages would work too as long as they provide a stream)
+  // final audioStream = await AudioRecorder().startStream(RecordConfig(
+  //   encoder: AudioEncoder.pcm16bits,
+  //   sampleRate: 16000,
+  //   numChannels: 1,
+  // ));
   Stream<List<int>> audioStream = audioFile.openRead(); // mic.stream ...
 
-  Stream<String> jsonStream =
-      deepgram.transcribeFromLiveAudioStream(audioStream);
+  Stream<String> jsonStream = deepgram.transcribeFromLiveAudioStream(audioStream);
 
   jsonStream.listen((json) {
     print(json);
@@ -45,8 +50,7 @@ void main() async {
 
   // if you prefer to have more control over the stream:
 
-  final DeepgramLiveTranscriber transcriber =
-      deepgram.createLiveTranscriber(audioStream);
+  final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(audioStream);
 
   transcriber.start();
 
