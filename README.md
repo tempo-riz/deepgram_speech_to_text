@@ -55,6 +55,7 @@ String json2 = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
 String json3 = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
 
 // -------------------- From a stream  --------------------
+// You need a package to record from mic ? I recommend this one : https://pub.dev/packages/record
 Stream<String> jsonStream = deepgram.transcribeFromLiveAudioStream(mic.stream);
 
 // or to have more control over the stream
