@@ -70,6 +70,7 @@ DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(micStream);
 transcriber.start();
 transcriber.jsonStream.listen(print);
 transcriber.close();
+// here you can call start() again, no need to create a new transcriber :)
 ```
 
 
