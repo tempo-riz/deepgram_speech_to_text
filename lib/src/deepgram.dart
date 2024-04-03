@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:universal_io/io.dart';
+import 'package:universal_file/universal_file.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -27,6 +27,7 @@ class DeepgramLiveTranscriber {
     wsChannel = WebSocketChannel.connect(
       buildUrl(_baseLiveUrl, null, queryParams),
       protocols: ['token', apiKey],
+      // equivalent to: (which woudn't work if kPlatformWeb is not defined)
       // headers: {
       //   HttpHeaders.authorizationHeader: 'Token $apiKey',
       // },

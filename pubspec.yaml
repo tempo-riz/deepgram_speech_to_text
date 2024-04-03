@@ -2,7 +2,7 @@ name: deepgram_speech_to_text
 description: >
   A simple Deepgram client for Dart and Flutter. 
   Made to simply transcribe audio from : File, URL, Stream or Raw data.
-version: 1.0.3
+version: 1.0.4
 repository: https://github.com/tempo-riz/deepgram_speech_to_text
 
 environment:
@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   http: ^1.2.0
-  universal_io: ^2.2.2
+  universal_file: ^1.0.0
   web_socket_channel: ^2.4.0
 
 dev_dependencies:

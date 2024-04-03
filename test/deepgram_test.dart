@@ -79,6 +79,8 @@ void main() {
       // Extract the transcript
       String transcript =
           map['results']['channels'][0]['alternatives'][0]['transcript'];
+      print(transcript);
+
       expect(transcript, isNotEmpty);
     });
 
@@ -94,6 +96,8 @@ void main() {
 
       String transcript =
           map['results']['channels'][0]['alternatives'][0]['transcript'];
+      print(transcript);
+
       expect(transcript, isNotEmpty);
     });
 
@@ -107,6 +111,7 @@ void main() {
 
       String transcript =
           map['results']['channels'][0]['alternatives'][0]['transcript'];
+      print(transcript);
       expect(transcript, isNotEmpty);
     });
 

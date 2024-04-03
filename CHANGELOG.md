@@ -1,5 +1,8 @@
+## 1.0.4
+- Added WEB support (for real this time)
+
 ## 1.0.3
-- Added WEB support
+- Tried to add WEB support
 
 ## 1.0.2
 - Fixed incorrect documentation
