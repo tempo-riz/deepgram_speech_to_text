@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 import 'package:deepgram_speech_to_text/src/utils.dart';
-import 'package:web_socket_channel/io.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:universal_io/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class DeepgramLiveTranscriber {
   /// Create a live transcriber with a start and close method
@@ -18,17 +18,18 @@ class DeepgramLiveTranscriber {
       StreamController<String>();
   final String apiKey;
   final String _baseLiveUrl = 'wss://api.deepgram.com/v1/listen';
-  late IOWebSocketChannel wsChannel;
+  late WebSocketChannel wsChannel;
 
   final Map<String, dynamic>? queryParams;
 
   /// Start the transcription process.
   Future<void> start() async {
-    wsChannel = IOWebSocketChannel.connect(
+    wsChannel = WebSocketChannel.connect(
       buildUrl(_baseLiveUrl, null, queryParams),
-      headers: {
-        HttpHeaders.authorizationHeader: 'Token $apiKey',
-      },
+      protocols: ['token', apiKey],
+      // headers: {
+      //   HttpHeaders.authorizationHeader: 'Token $apiKey',
+      // },
     );
     await wsChannel.ready;
 
