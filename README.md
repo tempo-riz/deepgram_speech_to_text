@@ -55,7 +55,7 @@ String json2 = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
 String json3 = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
 
 // -------------------- From a stream  --------------------
-  // for example : from a microphone https://pub.dev/packages/record (other packages would work too as long as they provide a stream)
+  // For example : from a microphone https://pub.dev/packages/record (other packages would work too as long as they provide a stream)
 final micStream = await AudioRecorder().startStream(RecordConfig(
       encoder: AudioEncoder.pcm16bits,
       sampleRate: 16000,
@@ -64,13 +64,13 @@ final micStream = await AudioRecorder().startStream(RecordConfig(
 // You need a package to record from mic ? I recommend this one : 
 Stream<String> jsonStream = deepgram.transcribeFromLiveAudioStream(micStream);
 
-// or to have more control over the stream
+// If you prefer to have more control over the stream:
 DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(micStream);
 
-transcriber.start();
-transcriber.jsonStream.listen(print);
-transcriber.close();
-// here you can call start() again, no need to create a new transcriber :)
+transcriber.jsonStream.listen((json) {
+  print(json);
+});
+// Here you can call start() again, no need to create a new transcriber :)
 ```
 
 

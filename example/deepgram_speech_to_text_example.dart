@@ -5,7 +5,7 @@ void main() async {
   // Get your API key from the Deepgram console if you don't have one https://console.deepgram.com/
   String apiKey = "YOUR_API_KEY";
 
-  // you can pass optional query parameters in :
+  // You can pass optional query parameters in :
   // - the constructore for all requests
   // - the method for a specific request
   // reference : https://developers.deepgram.com/reference/listen-file
@@ -16,7 +16,7 @@ void main() async {
     'punctuation': true,
   };
 
-  // you can pass base params common to all requests, and add or override them in the method's params
+  // You can pass base params common to all requests, and add or override them in the method's params
   Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
 
   // -------------------- From a file --------------------
@@ -35,12 +35,13 @@ void main() async {
   print(json3);
 
   // -------------------- From a stream  --------------------
-  // for example : from a microphone https://pub.dev/packages/record (other packages would work too as long as they provide a stream)
+  // For example : from a microphone https://pub.dev/packages/record (other packages would work too as long as they provide a stream)
   // final audioStream = await AudioRecorder().startStream(RecordConfig(
   //   encoder: AudioEncoder.pcm16bits,
   //   sampleRate: 16000,
   //   numChannels: 1,
   // ));
+
   Stream<List<int>> audioStream = audioFile.openRead(); // mic.stream ...
 
   Stream<String> jsonStream =
@@ -50,7 +51,7 @@ void main() async {
     print(json);
   });
 
-  // if you prefer to have more control over the stream:
+  // If you prefer to have more control over the stream:
 
   final DeepgramLiveTranscriber transcriber =
       deepgram.createLiveTranscriber(audioStream);
@@ -61,4 +62,5 @@ void main() async {
     print(json);
   });
   transcriber.close();
+// here you can call start() again, no need to create a new transcriber :)
 }
