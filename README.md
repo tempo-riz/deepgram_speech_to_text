@@ -17,12 +17,13 @@ dart format .
 flutter pub publish --dry-run
 -->
 
-A simple Deepgram client for Dart and Flutter.  
+A Deepgram client for Dart and Flutter. 
 
-You can simply transcribe audio from : File, URL, Stream or Raw data.
+Transcribe audio from : File, URL, Stream or Raw data.
 
-Currently only supports Speech-To-Text (STT), maybe more in the future. 
-Feel free to contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
+Currently only supports Speech-To-Text (STT). You need something else ? Just ask !
+
+Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
 
 ## Features
@@ -38,40 +39,67 @@ Speech to text transcription from:
 All you need is a Deepgram API key. You can get a free one by signing up on [Deepgram](https://www.deepgram.com/)
 
 ## Usage
-For a bit more detailed usage check `/example`
 
+
+### First create the client with optional parameters
 ```dart
 String apiKey = 'your_api_key';
-Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
 
-// -------------------- From a file --------------------
+Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
+    'model': 'nova-2-general',
+    'language': 'fr',
+    'filler_words': false,
+    'punctuation': true,
+  });
+```
+Then you can transcribe audio from different sources :
+
+
+## File
+```dart
 File audioFile = File('audio.wav');
-String json1 = await deepgram.transcribeFromFile(audioFile);
+String json = await deepgram.transcribeFromFile(audioFile);
+```
 
-// -------------------- From a URL --------------------
-String json2 = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
+## URL
+```dart
+String json = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
+```
 
-// -------------------- From raw data --------------------
-String json3 = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
 
-// -------------------- From a stream  --------------------
-  // For example : from a microphone https://pub.dev/packages/record
-final micStream = await AudioRecorder().startStream(RecordConfig(
+
+## Stream
+let's say from a microphone :
+```dart
+//  https://pub.dev/packages/record (other packages would work too)
+Stream<List<int>> micStream = await AudioRecorder().startStream(RecordConfig(
       encoder: AudioEncoder.pcm16bits,
       sampleRate: 16000,
       numChannels: 1,
-    ));
-    
+));
+```
+then you got 2 options depending if you want to have more control over the stream or not :
+```dart
+// 1. you want the stream to manage itself automatically
 Stream<String> jsonStream = deepgram.transcribeFromLiveAudioStream(micStream);
 
-// If you prefer to have more control over the stream:
+// 2. you want to manage the stream manually
 DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(micStream);
 
+transcriber.start();
 transcriber.jsonStream.listen((json) {
-  print(json);
+    print(json);
 });
-// Here you can call start() again, no need to create a new transcriber :)
+transcriber.close(); // you can call start() after close() to restart the transcription
 ```
+
+## Raw data
+```dart
+String json = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
+```
+
+For more detailed usage check `/example`
+
 
 
 ## Additional information
