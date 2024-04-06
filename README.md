@@ -40,8 +40,7 @@ All you need is a Deepgram API key. You can get a free one by signing up on [Dee
 
 ## Usage
 
-
-### First create the client with optional parameters
+First create the client with optional parameters
 ```dart
 String apiKey = 'your_api_key';
 

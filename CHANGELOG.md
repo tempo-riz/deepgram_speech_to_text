@@ -1,3 +1,6 @@
+## 1.0.5
+- better doc
+
 ## 1.0.4
 - Added WEB support (for real this time)
 

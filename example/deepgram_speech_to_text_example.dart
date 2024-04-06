@@ -57,7 +57,9 @@ void main() async {
     print(json);
   });
   transcriber.close();
-// here you can call start() again, no need to create a new transcriber :)
-}
+  // after that you can call start() again, no need to create a new transcriber :)
 
-// you can restart the transcriber with transcriber.start() after closing it
+  // -------------------- From raw data --------------------
+  String json3 = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
+  print(json3);
+}
