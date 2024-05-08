@@ -1,3 +1,8 @@
+## 2.0.0
+- STT methods now return a `DeepgramSttResult` instead of plain json string (breaking change)
+- updated example in README.md and /example, added a flutter demo
+- better documentation
+
 ## 1.0.5
 - better doc
 

@@ -11,9 +11,10 @@ void main() async {
   // reference : https://developers.deepgram.com/reference/listen-file
   Map<String, dynamic> params = {
     'model': 'nova-2-general',
-    'language': 'fr',
+    'detect_language': true,
     'filler_words': false,
     'punctuation': true,
+    //...
   };
 
   Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
@@ -21,13 +22,16 @@ void main() async {
   // -------------------- From a file --------------------
   File audioFile = File('audio.wav');
 
-  String json1 = await deepgram.transcribeFromFile(audioFile);
-  print(json1);
+  final res1 = await deepgram.transcribeFromFile(audioFile);
+  print(res1.transcript);
 
   // -------------------- From a URL --------------------
-  String json2 =
-      await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
-  print(json2);
+  final res2 = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
+  print(res2.transcript);
+
+  // -------------------- From raw data --------------------
+  final res = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
+  print(res.transcript);
 
   // -------------------- From a stream  --------------------
   // For example : from a microphone https://pub.dev/packages/record (other packages would work too as long as they provide a stream)
@@ -39,11 +43,11 @@ void main() async {
 
   Stream<List<int>> audioStream = audioFile.openRead(); // mic.stream ...
 
-  Stream<String> jsonStream =
+  Stream<DeepgramSttResult> resStream =
       deepgram.transcribeFromLiveAudioStream(audioStream);
 
-  jsonStream.listen((json) {
-    print(json);
+  resStream.listen((res) {
+    print(res.transcript);
   });
 
   // If you prefer to have more control over the stream:
@@ -53,13 +57,9 @@ void main() async {
 
   transcriber.start();
 
-  transcriber.jsonStream.listen((json) {
+  transcriber.stream.listen((json) {
     print(json);
   });
   transcriber.close();
   // after that you can call start() again, no need to create a new transcriber :)
-
-  // -------------------- From raw data --------------------
-  String json3 = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
-  print(json3);
 }

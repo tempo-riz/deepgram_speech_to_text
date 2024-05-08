@@ -5,7 +5,6 @@ import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:test/test.dart';
 import 'package:dotenv/dotenv.dart';
-import 'dart:convert';
 import 'dart:io';
 
 void main() {
@@ -71,17 +70,11 @@ void main() {
 
       expect(bytes.length, greaterThan(0));
 
-      final json = await deepgram.transcribeFromBytes(bytes);
+      final res = await deepgram.transcribeFromBytes(bytes);
 
-      // Parse the JSON response
-      Map<String, dynamic> map = jsonDecode(json);
+      print(res.transcript);
 
-      // Extract the transcript
-      String transcript =
-          map['results']['channels'][0]['alternatives'][0]['transcript'];
-      print(transcript);
-
-      expect(transcript, isNotEmpty);
+      expect(res.transcript, isNotEmpty);
     });
 
     test('transcribeFromFile', () async {
@@ -89,30 +82,21 @@ void main() {
 
       expect(file.existsSync(), isTrue);
 
-      final json = await deepgram.transcribeFromFile(file);
+      final res = await deepgram.transcribeFromFile(file);
 
-      // Parse the JSON response
-      Map<String, dynamic> map = jsonDecode(json);
+      print(res.transcript);
 
-      String transcript =
-          map['results']['channels'][0]['alternatives'][0]['transcript'];
-      print(transcript);
-
-      expect(transcript, isNotEmpty);
+      expect(res.transcript, isNotEmpty);
     });
 
     test('transcribeFromUrl', () async {
       final url = 'https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav';
 
-      final json = await deepgram.transcribeFromUrl(url);
+      final res = await deepgram.transcribeFromUrl(url);
 
-      // Parse the JSON response
-      Map<String, dynamic> map = jsonDecode(json);
+      print(res.transcript);
 
-      String transcript =
-          map['results']['channels'][0]['alternatives'][0]['transcript'];
-      print(transcript);
-      expect(transcript, isNotEmpty);
+      expect(res.transcript, isNotEmpty);
     });
 
     test('createLiveTranscriber', () async {
@@ -123,11 +107,9 @@ void main() {
 
       String transcript = '';
 
-      transcriber.jsonStream.listen((json) {
+      transcriber.stream.listen((res) {
         try {
-          Map<String, dynamic> map = jsonDecode(json);
-          String currentTranscript =
-              map['channel']['alternatives'][0]['transcript'];
+          String currentTranscript = res.transcript;
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {
@@ -153,16 +135,14 @@ void main() {
       final controller = getAudioStreamController();
       print("creating transcriber");
 
-      final Stream<String> jsonStream =
+      final Stream<DeepgramSttResult> stream =
           deepgram.transcribeFromLiveAudioStream(controller.stream);
 
       String transcript = '';
 
-      jsonStream.listen((json) {
+      stream.listen((res) {
         try {
-          Map<String, dynamic> map = jsonDecode(json);
-          String currentTranscript =
-              map['channel']['alternatives'][0]['transcript'];
+          String currentTranscript = res.transcript;
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {
