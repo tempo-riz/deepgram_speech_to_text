@@ -48,12 +48,12 @@ First create the client with optional parameters
 String apiKey = 'your_api_key';
 
 Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
-    'model': 'nova-2-general',
-    'detect_language': true,
-    'filler_words': false,
-    'punctuation': true,
+  'model': 'nova-2-general',
+  'detect_language': true,
+  'filler_words': false,
+  'punctuation': true,
     // more options here : https://developers.deepgram.com/reference/listen-file
-  });
+});
 ```
 Then you can transcribe audio from different sources :
 
