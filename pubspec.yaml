@@ -10,7 +10,7 @@ environment:
 dependencies:
   http: ^1.2.1
   universal_file: ^1.0.0
-  web_socket_channel: ^3.0.0
+  web_socket_channel: ^2.4.0
 
 dev_dependencies:
   lints: ^3.0.0
