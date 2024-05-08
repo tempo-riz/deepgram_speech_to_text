@@ -147,4 +147,28 @@ class Deepgram {
     transcriber.start();
     return transcriber.jsonStream;
   }
+
+  Future<bool> isApiKeyValid() async {
+    http.Response res = await http.post(
+      buildUrl(
+          _baseUrl,
+          {
+            'language': 'fr',
+          },
+          null),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token $apiKey',
+        HttpHeaders.contentTypeHeader: 'audio/*',
+      },
+      body: getSampleAudioData(),
+      encoding: Encoding.getByName('utf-8'),
+    );
+
+    return res.statusCode == 200;
+  }
+}
+
+extension Transcript on Map<String, dynamic> {
+  String get transcript =>
+      toUt8(this['results']['channels'][0]['alternatives'][0]['transcript']);
 }
