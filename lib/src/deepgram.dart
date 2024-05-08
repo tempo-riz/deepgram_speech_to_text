@@ -5,7 +5,6 @@ import 'package:deepgram_speech_to_text/src/utils.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:universal_file/universal_file.dart';
-import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Class used to transcribe live audio streams.
@@ -65,7 +64,7 @@ class DeepgramLiveTranscriber {
 
   /// End the transcription process.
   Future<void> close() async {
-    await _wsChannel.sink.close(status.normalClosure);
+    await _wsChannel.sink.close();
     await _outputTranscriptStream.close();
   }
 
