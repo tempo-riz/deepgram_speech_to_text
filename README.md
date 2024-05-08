@@ -77,7 +77,10 @@ print(res.transcript); // you can also acces .json and .map (json already parsed
 final res = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
 ```
 
-
+## Raw data
+```dart
+final res = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
+```
 
 ## Stream
 let's say from a microphone :
@@ -112,10 +115,7 @@ transcriber.stream.listen((res) {
 transcriber.close(); // you can call start() after close() to restart the transcription
 ```
 
-## Raw data
-```dart
-final res = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
-```
+
 
 For more detailed usage check the `/example` tab
 
