@@ -19,6 +19,10 @@ void main() async {
 
   Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
 
+  // check if the API key is valid
+  final isValid = await deepgram.isApiKeyValid();
+  print('API key is valid: $isValid');
+
   // -------------------- From a file --------------------
   File audioFile = File('audio.wav');
 

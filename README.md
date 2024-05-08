@@ -17,9 +17,7 @@ dart format .
 flutter pub publish --dry-run
 -->
 
-A Deepgram client for Dart and Flutter. 
-
-Currently supports Speech-To-Text (STT) features.
+A Deepgram client for Dart and Flutter, supporting all Speech-to-Text features on every platform.
 
 You need something else ? Just ask !
 
@@ -125,6 +123,17 @@ There is a full flutter demo [here](https://github.com/tempo-riz/deepgram_speech
 
 Tested on Android and iOS, but should work on other platforms too.
 
+## Debugging common errors
+- make sure your API key is valid and has enough credits
+
+```dart
+deepgram.isApiKeyValid()
+```
+
+
+- "Websocket was not promoted ..." : you are probably using wrong parameters, for example trying to use a whisper model with live streaming (not supported by deepgram)
+- empty transcript/only metadata : if streaming check that you specified encoding and sample_rate properly and that it matches the audio stream
+- double check the parameters you are using, some are not supported for streaming or for some models
 
 
 ## Additional information

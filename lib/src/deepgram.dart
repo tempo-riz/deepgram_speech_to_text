@@ -13,6 +13,8 @@ class DeepgramLiveTranscriber {
   /// Create a live transcriber with a start and close method
   DeepgramLiveTranscriber(this.apiKey,
       {required this.inputAudioStream, this.queryParams});
+
+  /// your Deepgram API key
   final String apiKey;
 
   /// The audio stream to transcribe.
@@ -80,6 +82,7 @@ class Deepgram {
     this.baseQueryParams,
   });
 
+  /// your Deepgram API key
   final String apiKey;
   final String _baseUrl = 'https://api.deepgram.com/v1/listen';
 
