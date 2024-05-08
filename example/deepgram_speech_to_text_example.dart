@@ -66,4 +66,11 @@ void main() async {
   });
   transcriber.close();
   // after that you can call start() again, no need to create a new transcriber :)
+
+  // -------------------- Text to Speech --------------------
+  final dg = Deepgram(apiKey);
+  final res3 = await dg.speakFromText('Hello, how are you?');
+  // then use res as you like
+  res3.data; // Uint8List of audio data
+  res3.contentType; // 'audio/wav'
 }

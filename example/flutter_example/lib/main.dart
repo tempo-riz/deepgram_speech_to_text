@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -107,6 +108,21 @@ void stopStream() async {
   await mic.stop();
 }
 
+void speakFromText() async {
+  Deepgram deepgramTTS = Deepgram(apiKey, baseQueryParams: {
+    'model': 'aura-asteria-en',
+    'encoding': "linear16",
+    'container': "wav",
+  });
+  final res = await deepgramTTS.speakFromText(
+    "hello, how are you today ?",
+  );
+  int random = DateTime.now().millisecondsSinceEpoch;
+  final path = await saveDataToFile("$random.wav", res.data);
+  final player = AudioPlayer();
+  await player.play(DeviceFileSource(path));
+}
+
 class MainApp extends StatelessWidget {
   MainApp({super.key});
 
@@ -141,6 +157,9 @@ class MainApp extends StatelessWidget {
                     onPressed: startStream, child: Text('Start Stream')),
                 ElevatedButton(
                     onPressed: stopStream, child: Text('Stop Stream')),
+                Divider(),
+                ElevatedButton(
+                    onPressed: speakFromText, child: Text('Speak From Text')),
               ],
             ),
           ),

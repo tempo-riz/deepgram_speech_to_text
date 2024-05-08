@@ -1,3 +1,6 @@
+## 2.1.0
+- support for TTS (text to speech) 
+
 ## 2.0.1
 - better documentation and debug hints
 

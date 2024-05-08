@@ -61,6 +61,12 @@ void main() {
       return controller;
     }
 
+    test('isApiKeyValid', () async {
+      final isValid = await deepgram.isApiKeyValid();
+      print('API key is valid: $isValid');
+      expect(isValid, isTrue);
+    });
+
     test('transcribeFromBytes', () async {
       final file = File('assets/jfk.wav');
 
@@ -159,6 +165,15 @@ void main() {
       print(transcript);
 
       expect(transcript, isNotEmpty);
+    });
+
+    test('speakFromText', () async {
+      final res = await deepgram
+          .speakFromText("hello, how are you today ?", queryParams: {
+        'model': 'aura-asteria-en',
+      });
+      print(res.contentType);
+      expect(res.data, isNotEmpty);
     });
   });
 }

@@ -17,7 +17,7 @@ dart format .
 flutter pub publish --dry-run
 -->
 
-A Deepgram client for Dart and Flutter, supporting all Speech-to-Text features on every platform.
+A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-to-Speech features on every platform.
 
 You need something else ? Just ask !
 
@@ -33,7 +33,8 @@ Speech to text (STT) transcription from:
 - Stream
 
   
-Text to speech (TTS) soon !
+Text to speech (TTS) is also supported
+- Text to raw audio data
 
 ## Getting started
 
@@ -115,7 +116,20 @@ transcriber.stream.listen((res) {
 transcriber.close(); // you can call start() after close() to restart the transcription
 ```
 
+## Text to speech
 
+```dart
+Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
+  'model': 'aura-asteria-en',
+  'encoding': "linear16",
+  'container': "wav",
+  // options here: https://developers.deepgram.com/reference/text-to-speech-api
+
+  final res = await deepgram.speakFromText('Hello world');
+  print(res.data); // raw audio data that you can use as you wish. Check flutter example for a simple player
+});
+
+```
 
 For more detailed usage check the `/example` tab
 

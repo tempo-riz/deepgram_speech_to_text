@@ -15,3 +15,9 @@ Future<String> getLocalFilePath(String filename) async {
   String appDocPath = appDocDir.path;
   return '$appDocPath/$filename';
 }
+
+Future<String> saveDataToFile(String filename, Uint8List data) async {
+  final path = await getLocalFilePath(filename);
+  await File(path).writeAsBytes(data);
+  return path;
+}

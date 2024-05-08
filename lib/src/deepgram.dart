@@ -84,7 +84,8 @@ class Deepgram {
 
   /// your Deepgram API key
   final String apiKey;
-  final String _baseUrl = 'https://api.deepgram.com/v1/listen';
+  final String _baseSttUrl = 'https://api.deepgram.com/v1/listen';
+  final String _baseTtsUrl = 'https://api.deepgram.com/v1/speak';
 
   /// Deepgram parameters
   ///
@@ -99,7 +100,7 @@ class Deepgram {
   Future<DeepgramSttResult> transcribeFromBytes(List<int> data,
       {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      buildUrl(_baseUrl, baseQueryParams, queryParams),
+      buildUrl(_baseSttUrl, baseQueryParams, queryParams),
       headers: {
         HttpHeaders.authorizationHeader: 'Token $apiKey',
       },
@@ -126,7 +127,7 @@ class Deepgram {
   Future<DeepgramSttResult> transcribeFromUrl(String url,
       {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      buildUrl(_baseUrl, baseQueryParams, queryParams),
+      buildUrl(_baseSttUrl, baseQueryParams, queryParams),
       headers: {
         HttpHeaders.authorizationHeader: 'Token $apiKey',
         HttpHeaders.contentTypeHeader: 'application/json',
@@ -169,7 +170,7 @@ class Deepgram {
   Future<bool> isApiKeyValid() async {
     http.Response res = await http.post(
       buildUrl(
-          _baseUrl,
+          _baseSttUrl,
           {
             'language': 'fr',
           },
@@ -179,10 +180,50 @@ class Deepgram {
         HttpHeaders.contentTypeHeader: 'audio/*',
       },
       body: getSampleAudioData(),
-      encoding: Encoding.getByName('utf-8'),
     );
 
     return res.statusCode == 200;
+  }
+
+  /// Convert text to speech. Returns the audio data.
+  ///
+  /// https://developers.deepgram.com/reference/text-to-speech-api
+  Future<DeepgramTtsResult> speakFromText(String text,
+      {Map<String, dynamic>? queryParams}) async {
+    http.Response res = await http.post(
+      buildUrl(_baseTtsUrl, baseQueryParams, queryParams),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Token $apiKey',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+      body: jsonEncode({
+        'text': toUt8(text),
+      }),
+    );
+
+    return DeepgramTtsResult(data: res.bodyBytes, headers: res.headers);
+  }
+}
+
+/// Represents the result of a TTS request.
+class DeepgramTtsResult {
+  /// The audio data.
+  final Uint8List data;
+
+  /// The headers returned by the Deepgram API.
+  final Map<String, String> headers;
+
+  /// The content type of the audio data. (e.g. 'audio/wav')
+  String? get contentType => headers['content-type'];
+
+  DeepgramTtsResult({
+    required this.data,
+    required this.headers,
+  });
+
+  @override
+  String toString() {
+    return 'DeepgramTtsResult -> contentType: "$contentType", data size: ${data.length} bytes';
   }
 }
 
