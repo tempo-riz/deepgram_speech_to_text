@@ -155,3 +155,8 @@ deepgram.isApiKeyValid()
 I created this package for my own needs since there are no dart sdk for deepgram. Happy to share !
 
 Don't hesitate to ask for new features or to contribute !
+
+## Support
+
+If you want to help me continue support of this project consider contributing here https://github.com/sponsors/tempo-riz :)
+If you'd like to support this project, consider contributing [here](https://github.com/sponsors/tempo-riz). Thank you! :)
