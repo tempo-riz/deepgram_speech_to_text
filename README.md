@@ -158,5 +158,4 @@ Don't hesitate to ask for new features or to contribute !
 
 ## Support
 
-If you want to help me continue support of this project consider contributing here https://github.com/sponsors/tempo-riz :)
 If you'd like to support this project, consider contributing [here](https://github.com/sponsors/tempo-riz). Thank you! :)
