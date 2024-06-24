@@ -25,6 +25,12 @@ String toUt8(String text) {
   return utf8.decode(text.runes.toList());
 }
 
+class Headers {
+  static const authorization = "authorization";
+  static const contentType = "content-type";
+  static const accept = "accept";
+}
+
 /// Get a 1 sec duration sample audio data encoded in base64.
 Uint8List getSampleAudioData() {
   // 1 sec of audio encoded in base64 (french mp3)

@@ -1,16 +1,21 @@
+## 2.2.0
+- Added `transcribeFromPath()` for convenience.
+- Fixed package on web.
+- Updated example to work on web.
+
 ## 2.1.0
-- support for TTS (text to speech) 
+- Support for TTS (text to speech) 
 
 ## 2.0.1
-- better documentation and debug hints
+- Better documentation and debug hints
 
 ## 2.0.0
 - STT methods now return a `DeepgramSttResult` instead of plain json string (breaking change)
-- updated example in README.md and /example, added a flutter demo
-- better documentation
+- Updated example in README.md and /example, added a flutter demo
+- Better documentation
 
 ## 1.0.5
-- better doc
+- Better doc
 
 ## 1.0.4
 - Added WEB support (for real this time)

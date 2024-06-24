@@ -69,7 +69,7 @@ class DeepgramSttResult {
 ## File
 ```dart
 File audioFile = File('audio.wav');
-DeepgramSttResult res = await deepgram.transcribeFromFile(audioFile);
+DeepgramSttResult res = await deepgram.transcribeFromFile(audioFile); // or transcribeFromPath() if you prefer
 print(res.transcript); // you can also acces .json and .map (json already parsed)
 ```
 

@@ -35,7 +35,7 @@ class DeepgramLiveTranscriber {
       protocols: ['token', apiKey],
       // equivalent to: (which woudn't work if kPlatformWeb is not defined)
       // headers: {
-      //   HttpHeaders.authorizationHeader: 'Token $apiKey',
+      //   Headers.authorizationHeader: 'Token $apiKey',
       // },
     );
     await _wsChannel.ready;
@@ -94,7 +94,7 @@ class Deepgram {
   /// (if same params are present in both baseQueryParams and queryParams, the value from queryParams is used)
   final Map<String, dynamic>? baseQueryParams;
 
-  /// Transcribe from raw data. Returns the transcription as a JSON string.
+  /// Transcribe from raw data.
   ///
   /// https://developers.deepgram.com/reference/listen-file
   Future<DeepgramSttResult> transcribeFromBytes(List<int> data,
@@ -102,7 +102,7 @@ class Deepgram {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, baseQueryParams, queryParams),
       headers: {
-        HttpHeaders.authorizationHeader: 'Token $apiKey',
+        Headers.authorization: 'Token $apiKey',
       },
       body: data,
     );
@@ -110,7 +110,7 @@ class Deepgram {
     return DeepgramSttResult(res.body);
   }
 
-  /// Transcribe a local audio file. Returns the transcription as a JSON string.
+  /// Transcribe a local audio file.
   ///
   /// https://developers.deepgram.com/reference/listen-file
   Future<DeepgramSttResult> transcribeFromFile(File file,
@@ -121,7 +121,19 @@ class Deepgram {
     return transcribeFromBytes(bytes, queryParams: queryParams);
   }
 
-  /// Transcribe a remote audio file from URL. Returns the transcription as a JSON string.
+  /// Transcribe a local audio file from path.
+  ///
+  /// https://developers.deepgram.com/reference/listen-file
+  Future<DeepgramSttResult> transcribeFromPath(String path,
+      {Map<String, dynamic>? queryParams}) {
+    final file = File(path);
+    assert(file.existsSync());
+    final Uint8List bytes = file.readAsBytesSync();
+
+    return transcribeFromBytes(bytes, queryParams: queryParams);
+  }
+
+  /// Transcribe a remote audio file from URL.
   ///
   /// https://developers.deepgram.com/reference/listen-remote
   Future<DeepgramSttResult> transcribeFromUrl(String url,
@@ -129,9 +141,9 @@ class Deepgram {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, baseQueryParams, queryParams),
       headers: {
-        HttpHeaders.authorizationHeader: 'Token $apiKey',
-        HttpHeaders.contentTypeHeader: 'application/json',
-        HttpHeaders.acceptHeader: 'application/json',
+        Headers.authorization: 'Token $apiKey',
+        Headers.contentType: 'application/json',
+        Headers.accept: 'application/json',
       },
       body: jsonEncode({'url': url}),
     );
@@ -151,7 +163,7 @@ class Deepgram {
         queryParams: mergeMaps(baseQueryParams, queryParams));
   }
 
-  /// Transcribe a live audio stream. Returns a stream of JSON strings.
+  /// Transcribe a live audio stream.
   ///
   /// https://developers.deepgram.com/reference/listen-live
   Stream<DeepgramSttResult> transcribeFromLiveAudioStream(
@@ -176,8 +188,8 @@ class Deepgram {
           },
           null),
       headers: {
-        HttpHeaders.authorizationHeader: 'Token $apiKey',
-        HttpHeaders.contentTypeHeader: 'audio/*',
+        Headers.authorization: 'Token $apiKey',
+        Headers.contentType: 'audio/*',
       },
       body: getSampleAudioData(),
     );
@@ -185,7 +197,7 @@ class Deepgram {
     return res.statusCode == 200;
   }
 
-  /// Convert text to speech. Returns the audio data.
+  /// Convert text to speech.
   ///
   /// https://developers.deepgram.com/reference/text-to-speech-api
   Future<DeepgramTtsResult> speakFromText(String text,
@@ -193,8 +205,8 @@ class Deepgram {
     http.Response res = await http.post(
       buildUrl(_baseTtsUrl, baseQueryParams, queryParams),
       headers: {
-        HttpHeaders.authorizationHeader: 'Token $apiKey',
-        HttpHeaders.contentTypeHeader: 'application/json',
+        Headers.authorization: 'Token $apiKey',
+        Headers.contentType: 'application/json',
       },
       body: jsonEncode({
         'text': toUt8(text),
