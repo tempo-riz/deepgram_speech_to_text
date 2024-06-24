@@ -9,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  deepgram_speech_to_text: ^2.1.0
+  deepgram_speech_to_text:
+    path: ../../
   universal_file: ^1.0.0
   record: ^5.0.5
   path_provider: ^2.1.3
