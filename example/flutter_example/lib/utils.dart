@@ -8,10 +8,11 @@ Future<void> copyAssetToFile(String assetPath, String filename) async {
   List<int> bytes = data.buffer.asUint8List();
   final path = await getLocalFilePath(filename);
   await File(path).writeAsBytes(bytes);
+  // print('$assetPath/$filename copied to $path');
 }
 
 Future<String> getLocalFilePath(String filename) async {
-  Directory appDocDir = await getApplicationDocumentsDirectory();
+  final appDocDir = await getApplicationDocumentsDirectory();
   String appDocPath = appDocDir.path;
   return '$appDocPath/$filename';
 }

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+import 'package:file_picker/file_picker.dart' if (dart.library.html) 'file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_example/utils.dart';
@@ -16,8 +18,7 @@ const url = 'https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-
-  await copyAssetToFile(fileAssetPath, fileName);
+  if (!kIsWeb) await copyAssetToFile(fileAssetPath, fileName);
   runApp(MainApp());
 }
 
@@ -41,12 +42,24 @@ void checkApiKey() async {
 }
 
 void fromFile() async {
-  print('Transcribing from file...');
-  final path = await getLocalFilePath('jfk.wav');
-  final file = File(path);
+  // web needs user to pick file
+  if (kIsWeb) {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-  final res = await deepgram.transcribeFromFile(file);
-  print(res.transcript);
+    if (result == null) return;
+    final data = result.files.first.bytes;
+    if (data == null) return;
+    final res = await deepgram.transcribeFromBytes(data);
+    print(res.transcript);
+  } else {
+    // ios android ...
+    print('Transcribing from file...');
+    final path = await getLocalFilePath(fileName);
+    final file = File(path);
+
+    final res = await deepgram.transcribeFromFile(file);
+    print(res.transcript);
+  }
 }
 
 void fromUrl() async {
@@ -83,8 +96,7 @@ void startStream() async {
     'sample_rate': 16000,
   };
 
-  final stream = deepgram.transcribeFromLiveAudioStream(audioStream,
-      queryParams: liveParams);
+  final stream = deepgram.transcribeFromLiveAudioStream(audioStream, queryParams: liveParams);
 
   stream.listen((res) {
     print(res.transcript);
@@ -117,10 +129,16 @@ void speakFromText() async {
   final res = await deepgramTTS.speakFromText(
     "hello, how are you today ?",
   );
-  int random = DateTime.now().millisecondsSinceEpoch;
-  final path = await saveDataToFile("$random.wav", res.data);
+
   final player = AudioPlayer();
-  await player.play(DeviceFileSource(path));
+
+  if (kIsWeb) {
+    await player.play(BytesSource(res.data));
+  } else {
+    int random = DateTime.now().millisecondsSinceEpoch;
+    final path = await saveDataToFile("$random.wav", res.data);
+    await player.play(DeviceFileSource(path));
+  }
 }
 
 class MainApp extends StatelessWidget {
@@ -146,20 +164,16 @@ class MainApp extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                    onPressed: checkApiKey, child: Text('Check Api Key')),
+                ElevatedButton(onPressed: checkApiKey, child: Text('Check Api Key')),
                 Divider(),
                 ElevatedButton(onPressed: fromFile, child: Text('From File')),
                 ElevatedButton(onPressed: fromUrl, child: Text('From Url')),
                 ElevatedButton(onPressed: fromBytes, child: Text('From Bytes')),
                 Divider(),
-                ElevatedButton(
-                    onPressed: startStream, child: Text('Start Stream')),
-                ElevatedButton(
-                    onPressed: stopStream, child: Text('Stop Stream')),
+                ElevatedButton(onPressed: startStream, child: Text('Start Stream')),
+                ElevatedButton(onPressed: stopStream, child: Text('Stop Stream')),
                 Divider(),
-                ElevatedButton(
-                    onPressed: speakFromText, child: Text('Speak From Text')),
+                ElevatedButton(onPressed: speakFromText, child: Text('Speak From Text')),
               ],
             ),
           ),
