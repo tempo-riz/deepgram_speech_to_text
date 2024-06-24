@@ -27,6 +27,7 @@ class DeepgramLiveTranscriber {
   final StreamController<DeepgramSttResult> _outputTranscriptStream =
       StreamController<DeepgramSttResult>();
   late WebSocketChannel _wsChannel;
+  bool _isClosed = false;
 
   /// Start the transcription process.
   Future<void> start() async {
@@ -39,6 +40,7 @@ class DeepgramLiveTranscriber {
       // },
     );
     await _wsChannel.ready;
+    _isClosed = false;
 
     // can listen only once to the channel
     _wsChannel.stream.listen((event) {
@@ -55,11 +57,14 @@ class DeepgramLiveTranscriber {
 
     // listen to the input audio stream and send it to the channel if it's still open
     inputAudioStream.listen((data) {
+      if (_isClosed) return;
+
       if (_wsChannel.closeCode != null) {
         close();
-      } else {
-        _wsChannel.sink.add(data);
+        return;
       }
+
+      _wsChannel.sink.add(data);
     }, onDone: () {
       close();
     });
@@ -67,6 +72,8 @@ class DeepgramLiveTranscriber {
 
   /// End the transcription process.
   Future<void> close() async {
+    if (_isClosed) return;
+    _isClosed = true;
     await _wsChannel.sink.close(status.normalClosure);
     await _outputTranscriptStream.close();
   }

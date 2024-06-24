@@ -1,3 +1,6 @@
+# 2.2.1
+- update web_socket_channel dependency
+
 ## 2.2.0
 - Added `transcribeFromPath()` for convenience.
 - Fixed package on web.
