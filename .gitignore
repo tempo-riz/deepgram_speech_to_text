@@ -1,3 +1,4 @@
+.fvm
 pubspec.lock
 *.env
 # Ignoring native folders of the example as they can be re-generated easily using:

@@ -1,3 +1,6 @@
+# 2.2.2
+- fixed utf8 parsing issue
+
 # 2.2.1
 - update web_socket_channel dependency
 

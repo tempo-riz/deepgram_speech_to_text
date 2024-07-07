@@ -22,7 +22,15 @@ Map<String, dynamic> mergeMaps(
 }
 
 String toUt8(String text) {
-  return utf8.decode(text.runes.toList());
+  if (text.isEmpty) {
+    return text;
+  }
+
+  try {
+    return utf8.decode(text.runes.toList());
+  } catch (e) {
+    return text;
+  }
 }
 
 class Headers {
