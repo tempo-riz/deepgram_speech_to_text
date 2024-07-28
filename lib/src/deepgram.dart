@@ -49,7 +49,6 @@ class DeepgramLiveTranscriber {
         close();
       } else {
         _handleWebSocketMessage(event);
-        // _outputTranscriptStream.add(DeepgramSttResult(event));
       }
     }, onDone: () {
       close();
