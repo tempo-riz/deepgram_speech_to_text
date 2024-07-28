@@ -48,7 +48,8 @@ class DeepgramLiveTranscriber {
       if (_outputTranscriptStream.isClosed) {
         close();
       } else {
-        _outputTranscriptStream.add(DeepgramSttResult(event));
+        _handleWebSocketMessage(event);
+        // _outputTranscriptStream.add(DeepgramSttResult(event));
       }
     }, onDone: () {
       close();
@@ -89,6 +90,43 @@ class DeepgramLiveTranscriber {
   Future<void> resume() async {
     if (!_isPaused) return;
     _isPaused = false;
+  }
+
+  /// Handle incoming WebSocket messages based on their type.
+  void _handleWebSocketMessage(dynamic event) {
+    // Parse the event data as JSON.
+    final message = jsonDecode(event);
+
+    // Determine the message type and handle accordingly.
+    if (message.containsKey('type')) {
+      switch (message['type']) {
+        case 'Result':
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'UtteranceEnd':
+          // Handle UtteranceEnd message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'Metadata':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'SpeechStarted':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'Finalize':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        default:
+          // Handle unknown message type.
+          print('Unknown message type: ${message['type']}');
+      }
+    } else {
+      // If message type is not specified, handle as a generic message.
+      _outputTranscriptStream.add(DeepgramSttResult(event));
+    }
   }
 
   /// The result stream of the transcription process.
