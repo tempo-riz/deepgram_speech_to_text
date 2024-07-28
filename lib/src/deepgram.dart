@@ -99,7 +99,7 @@ class DeepgramLiveTranscriber {
     // Determine the message type and handle accordingly.
     if (message.containsKey('type')) {
       switch (message['type']) {
-        case 'Result':
+        case 'Results':
           _outputTranscriptStream.add(DeepgramSttResult(event));
           break;
         case 'UtteranceEnd':
