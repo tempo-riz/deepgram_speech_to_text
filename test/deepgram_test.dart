@@ -26,16 +26,14 @@ void main() {
         'filler_words': false,
         'punctuation': true,
       });
-      expect(url.toString(),
-          'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
+      expect(url.toString(), 'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
     });
   });
 
   group('[API]', () {
     final env = DotEnv()..load();
 
-    final apiKey = env.getOrElse(
-        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     /// [simulating a live stream]
@@ -108,14 +106,14 @@ void main() {
     test('createLiveTranscriber', () async {
       final controller = getAudioStreamController();
       print("creating transcriber");
-      final DeepgramLiveTranscriber transcriber =
-          deepgram.createLiveTranscriber(controller.stream);
+      final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(controller.stream);
 
       String transcript = '';
 
       transcriber.stream.listen((res) {
         try {
-          String currentTranscript = res.transcript;
+          print(res.type);
+          String currentTranscript = res.transcript ?? "";
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {
@@ -126,12 +124,17 @@ void main() {
       print("starting");
       await transcriber.start();
 
-      //close the stream after 8 seconds
-      await Future.delayed(Duration(seconds: 6), () {
-        print("stopping");
-        // controller.close();
-        transcriber.close();
-      });
+      await Future.delayed(Duration(seconds: 1));
+      print("pausing (waiting 14 seconds)");
+      transcriber.pause();
+
+      await Future.delayed(Duration(seconds: 14)); // would normally close after 10 seconds
+      print("resuming");
+      transcriber.resume();
+
+      await Future.delayed(Duration(seconds: 5));
+      print("stopping");
+      transcriber.close();
 
       print(transcript);
       expect(transcript, isNotEmpty);
@@ -141,14 +144,13 @@ void main() {
       final controller = getAudioStreamController();
       print("creating transcriber");
 
-      final Stream<DeepgramSttResult> stream =
-          deepgram.transcribeFromLiveAudioStream(controller.stream);
+      final Stream<DeepgramSttResult> stream = deepgram.transcribeFromLiveAudioStream(controller.stream);
 
       String transcript = '';
 
       stream.listen((res) {
         try {
-          String currentTranscript = res.transcript;
+          String currentTranscript = res.transcript ?? "";
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {
@@ -168,8 +170,7 @@ void main() {
     });
 
     test('speakFromText', () async {
-      final res = await deepgram
-          .speakFromText("hello, how are you today ?", queryParams: {
+      final res = await deepgram.speakFromText("hello, how are you today ?", queryParams: {
         'model': 'aura-asteria-en',
       });
       print(res.contentType);
