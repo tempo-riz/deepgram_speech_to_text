@@ -14,10 +14,13 @@ class DeepgramLiveTranscriber {
   DeepgramLiveTranscriber(this.apiKey,
       {required this.inputAudioStream, this.queryParams});
 
-  /// Flag which determines if transcriber was closed
+  /// if transcriber was closed
   bool _isClosed = false;
 
-  /// Flag which determines if web socket throwed error during initialization
+  /// if transcriber is paused
+  bool _isPaused = false;
+
+  /// if web socket throwed error during initialization
   bool _hasInitializationException = false;
 
   /// Your Deepgram API key
@@ -33,17 +36,13 @@ class DeepgramLiveTranscriber {
   final StreamController<DeepgramSttResult> _outputTranscriptStream =
       StreamController<DeepgramSttResult>();
   late WebSocketChannel _wsChannel;
-  bool _isPaused = false;
+  Timer? _keepAliveTimer;
 
   /// Start the transcription process.
   Future<void> start() async {
     _wsChannel = WebSocketChannel.connect(
       buildUrl(_baseLiveUrl, null, queryParams),
       protocols: ['token', apiKey],
-      // equivalent to: (which woudn't work if kPlatformWeb is not defined)
-      // headers: {
-      //   Headers.authorizationHeader: 'Token $apiKey',
-      // },
     );
 
     try {
@@ -106,14 +105,33 @@ class DeepgramLiveTranscriber {
   }
 
   /// Pause the transcription process.
-  Future<void> pause() async {
+  Future<void> pause({bool keepAlive = true}) async {
     if (_isPaused) return;
+
+    if (keepAlive) {
+      // start the keep alive process https://developers.deepgram.com/docs/keep-alive
+      // send every 8 seconds a keep alive message (closes after 10 seconds of inactivity)
+      _keepAliveTimer = Timer.periodic(Duration(seconds: 8), (timer) {
+        if (!_isPaused) {
+          timer.cancel();
+          _keepAliveTimer = null;
+          return;
+        }
+        try {
+          _wsChannel.sink.add(jsonEncode({'type': 'KeepAlive'}));
+        } catch (e) {
+          print('KeepAlive error: $e');
+        }
+      });
+    }
     _isPaused = true;
   }
 
   /// Resume the transcription process.
   Future<void> resume() async {
     if (!_isPaused) return;
+    _keepAliveTimer?.cancel();
+    _keepAliveTimer = null;
     _isPaused = false;
   }
 
