@@ -1,3 +1,6 @@
+# 2.3.1
+- Updated docs
+
 # 2.3.0
 - Added pause() and resume() methods for streaming
 - Add missing streaming features (thanks @DamienDeepgram)
