@@ -15,7 +15,7 @@ class DeepgramLiveTranscriber {
       {required this.inputAudioStream, this.queryParams});
 
   /// Flag which determines if transcriber was closed
-  bool _isClosed = true;
+  bool _isClosed = false;
 
   /// Flag which determines if web socket throwed error during initialization
   bool _hasInitializationException = false;
