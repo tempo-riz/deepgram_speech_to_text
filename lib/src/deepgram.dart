@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:deepgram_speech_to_text/src/utils.dart';
 
+import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:universal_file/universal_file.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -14,7 +14,13 @@ class DeepgramLiveTranscriber {
   DeepgramLiveTranscriber(this.apiKey,
       {required this.inputAudioStream, this.queryParams});
 
-  /// your Deepgram API key
+  /// Flag which determines if transcriber was closed
+  bool _isClosed = false;
+
+  /// Flag which determines if web socket throwed error during initialization
+  bool _hasInitializationException = false;
+
+  /// Your Deepgram API key
   final String apiKey;
 
   /// The audio stream to transcribe.
@@ -27,7 +33,6 @@ class DeepgramLiveTranscriber {
   final StreamController<DeepgramSttResult> _outputTranscriptStream =
       StreamController<DeepgramSttResult>();
   late WebSocketChannel _wsChannel;
-  bool _isClosed = false;
 
   /// Start the transcription process.
   Future<void> start() async {
@@ -39,7 +44,15 @@ class DeepgramLiveTranscriber {
       //   Headers.authorizationHeader: 'Token $apiKey',
       // },
     );
-    await _wsChannel.ready;
+
+    try {
+      await _wsChannel.ready;
+    } catch (_) {
+      // Throw during initialization ws, assign exception to true
+      _hasInitializationException = true;
+      rethrow;
+    }
+
     _isClosed = false;
 
     // can listen only once to the channel
@@ -74,12 +87,28 @@ class DeepgramLiveTranscriber {
   Future<void> close() async {
     if (_isClosed) return;
     _isClosed = true;
-    await _wsChannel.sink.close(status.normalClosure);
-    await _outputTranscriptStream.close();
+
+    // Close ws sink only when ws has been connected, otherwise future will never complete
+    if (!_hasInitializationException) {
+      await _wsChannel.sink.close(status.normalClosure);
+    } else {
+      unawaited(_wsChannel.sink.close(status.normalClosure));
+    }
+
+    // If stream has listener then we can await for close result
+    if (_outputTranscriptStream.hasListener) {
+      await _outputTranscriptStream.close();
+    } else {
+      // Otherwise when stream does not have listener, close will never return future
+      unawaited(_outputTranscriptStream.close());
+    }
   }
 
   /// The result stream of the transcription process.
   Stream<DeepgramSttResult> get stream => _outputTranscriptStream.stream;
+
+  /// Getter for isClosed stream variable
+  bool get isClosed => _isClosed;
 }
 
 /// The Deepgram API client.
