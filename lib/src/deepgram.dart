@@ -14,10 +14,13 @@ class DeepgramLiveTranscriber {
   DeepgramLiveTranscriber(this.apiKey,
       {required this.inputAudioStream, this.queryParams});
 
-  /// Flag which determines if transcriber was closed
+  /// if transcriber was closed
   bool _isClosed = false;
 
-  /// Flag which determines if web socket throwed error during initialization
+  /// if transcriber is paused
+  bool _isPaused = false;
+
+  /// if web socket throwed error during initialization
   bool _hasInitializationException = false;
 
   /// Your Deepgram API key
@@ -33,16 +36,13 @@ class DeepgramLiveTranscriber {
   final StreamController<DeepgramSttResult> _outputTranscriptStream =
       StreamController<DeepgramSttResult>();
   late WebSocketChannel _wsChannel;
+  Timer? _keepAliveTimer;
 
   /// Start the transcription process.
   Future<void> start() async {
     _wsChannel = WebSocketChannel.connect(
       buildUrl(_baseLiveUrl, null, queryParams),
       protocols: ['token', apiKey],
-      // equivalent to: (which woudn't work if kPlatformWeb is not defined)
-      // headers: {
-      //   Headers.authorizationHeader: 'Token $apiKey',
-      // },
     );
 
     try {
@@ -60,7 +60,7 @@ class DeepgramLiveTranscriber {
       if (_outputTranscriptStream.isClosed) {
         close();
       } else {
-        _outputTranscriptStream.add(DeepgramSttResult(event));
+        _handleWebSocketMessage(event);
       }
     }, onDone: () {
       close();
@@ -70,7 +70,7 @@ class DeepgramLiveTranscriber {
 
     // listen to the input audio stream and send it to the channel if it's still open
     inputAudioStream.listen((data) {
-      if (_isClosed) return;
+      if (_isClosed || _isPaused) return;
 
       if (_wsChannel.closeCode != null) {
         close();
@@ -101,6 +101,74 @@ class DeepgramLiveTranscriber {
     } else {
       // Otherwise when stream does not have listener, close will never return future
       unawaited(_outputTranscriptStream.close());
+    }
+  }
+
+  /// Pause the transcription process.
+  Future<void> pause({bool keepAlive = true}) async {
+    if (_isPaused) return;
+
+    if (keepAlive) {
+      // start the keep alive process https://developers.deepgram.com/docs/keep-alive
+      // send every 8 seconds a keep alive message (closes after 10 seconds of inactivity)
+      _keepAliveTimer = Timer.periodic(Duration(seconds: 8), (timer) {
+        if (!_isPaused) {
+          timer.cancel();
+          _keepAliveTimer = null;
+          return;
+        }
+        try {
+          _wsChannel.sink.add(jsonEncode({'type': 'KeepAlive'}));
+        } catch (e) {
+          print('KeepAlive error: $e');
+        }
+      });
+    }
+    _isPaused = true;
+  }
+
+  /// Resume the transcription process.
+  Future<void> resume() async {
+    if (!_isPaused) return;
+    _keepAliveTimer?.cancel();
+    _keepAliveTimer = null;
+    _isPaused = false;
+  }
+
+  /// Handle incoming WebSocket messages based on their type.
+  void _handleWebSocketMessage(dynamic event) {
+    // Parse the event data as JSON.
+    final message = jsonDecode(event);
+
+    // Determine the message type and handle accordingly.
+    if (message.containsKey('type')) {
+      switch (message['type']) {
+        case 'Results':
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'UtteranceEnd':
+          // Handle UtteranceEnd message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'Metadata':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'SpeechStarted':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'Finalize':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        default:
+          // Handle unknown message type.
+          print('Unknown message type: ${message['type']}');
+      }
+    } else {
+      // If message type is not specified, handle as a generic message.
+      _outputTranscriptStream.add(DeepgramSttResult(event));
     }
   }
 
