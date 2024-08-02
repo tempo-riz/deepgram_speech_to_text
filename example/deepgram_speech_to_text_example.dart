@@ -47,7 +47,8 @@ void main() async {
 
   Stream<List<int>> audioStream = audioFile.openRead(); // mic.stream ...
 
-  Stream<DeepgramSttResult> resStream = deepgram.transcribeFromLiveAudioStream(audioStream);
+  Stream<DeepgramSttResult> resStream =
+      deepgram.transcribeFromLiveAudioStream(audioStream);
 
   resStream.listen((res) {
     print(res.transcript);
@@ -55,7 +56,8 @@ void main() async {
 
   // If you prefer to have more control over the stream:
 
-  final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(audioStream);
+  final DeepgramLiveTranscriber transcriber =
+      deepgram.createLiveTranscriber(audioStream);
 
   transcriber.start();
 

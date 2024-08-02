@@ -1,8 +1,14 @@
+# 2.3.0
+- Added pause() and resume() methods for streaming
+- Add missing streaming features (thanks @DamienDeepgram)
+- Fixed: Memory leak + infinity future (thanks @PcolBP)
+- DeepgramSttResult now has .type getter, .transcript is safer and nullable
+
 # 2.2.2
-- fixed utf8 parsing issue
+- Fixed utf8 parsing issue
 
 # 2.2.1
-- update web_socket_channel dependency
+- Update web_socket_channel dependency
 
 ## 2.2.0
 - Added `transcribeFromPath()` for convenience.

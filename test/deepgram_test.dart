@@ -26,14 +26,16 @@ void main() {
         'filler_words': false,
         'punctuation': true,
       });
-      expect(url.toString(), 'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
+      expect(url.toString(),
+          'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
     });
   });
 
   group('[API]', () {
     final env = DotEnv()..load();
 
-    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse(
+        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     /// [simulating a live stream]
@@ -106,7 +108,8 @@ void main() {
     test('createLiveTranscriber', () async {
       final controller = getAudioStreamController();
       print("creating transcriber");
-      final DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(controller.stream);
+      final DeepgramLiveTranscriber transcriber =
+          deepgram.createLiveTranscriber(controller.stream);
 
       String transcript = '';
 
@@ -128,7 +131,8 @@ void main() {
       print("pausing (waiting 14 seconds)");
       transcriber.pause();
 
-      await Future.delayed(Duration(seconds: 14)); // would normally close after 10 seconds
+      await Future.delayed(
+          Duration(seconds: 14)); // would normally close after 10 seconds
       print("resuming");
       transcriber.resume();
 
@@ -144,7 +148,8 @@ void main() {
       final controller = getAudioStreamController();
       print("creating transcriber");
 
-      final Stream<DeepgramSttResult> stream = deepgram.transcribeFromLiveAudioStream(controller.stream);
+      final Stream<DeepgramSttResult> stream =
+          deepgram.transcribeFromLiveAudioStream(controller.stream);
 
       String transcript = '';
 
@@ -170,7 +175,8 @@ void main() {
     });
 
     test('speakFromText', () async {
-      final res = await deepgram.speakFromText("hello, how are you today ?", queryParams: {
+      final res = await deepgram
+          .speakFromText("hello, how are you today ?", queryParams: {
         'model': 'aura-asteria-en',
       });
       print(res.contentType);
