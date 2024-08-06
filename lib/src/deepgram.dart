@@ -90,6 +90,8 @@ class DeepgramLiveTranscriber {
     if (_isClosed) return;
     _isClosed = true;
 
+    _keepAliveTimer?.cancel();
+
     // Close ws sink only when ws has been connected, otherwise future will never complete
     if (!_hasInitializationException) {
       await _wsChannel.sink.close();
@@ -116,7 +118,7 @@ class DeepgramLiveTranscriber {
       // start the keep alive process https://developers.deepgram.com/docs/keep-alive
       // send every 8 seconds a keep alive message (closes after 10 seconds of inactivity)
       _keepAliveTimer = Timer.periodic(Duration(seconds: 8), (timer) {
-        if (!_isPaused) {
+        if (!_isPaused || isClosed) {
           timer.cancel();
           _keepAliveTimer = null;
           return;
