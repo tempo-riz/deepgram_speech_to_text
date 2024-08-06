@@ -90,6 +90,8 @@ class DeepgramLiveTranscriber {
     if (_isClosed) return;
     _isClosed = true;
 
+    _keepAliveTimer?.cancel();
+
     // Close ws sink only when ws has been connected, otherwise future will never complete
     if (!_hasInitializationException) {
       await _wsChannel.sink.close();
