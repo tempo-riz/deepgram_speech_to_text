@@ -1,4 +1,5 @@
 <!-- 
+
 This README describes the package. If you publish this package to pub.dev,
 this README's contents appear on the landing page for your package.
 
@@ -19,18 +20,14 @@ flutter pub publish --dry-run
 
 A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-to-Speech features on every platform.
 
-You need something else ? Just ask !
-
-Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
+You need something else ? Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
 
 ## Features
 
 Speech to text (STT) transcription from:
-- File
-- URL
-- Raw data
-- Stream
+- Local file, remote URL, Raw data
+- Streaming audio 
 
   
 Text to speech (TTS) is also supported
@@ -62,7 +59,8 @@ All STT methods return a `DeepgramSttResult` object with the following propertie
 class DeepgramSttResult {
   final String json; // raw json response
   final Map<String, dynamic> map; // parsed json response into a map
-  final String transcript; // the transcript extracted from the response
+  final String? transcript; // the transcript extracted from the response
+  final String? type; // the response type (Result, Metadata, ...) non-null for streaming
 }
 ```
 
@@ -108,12 +106,19 @@ Stream<DeepgramSttResult> stream = deepgram.transcribeFromLiveAudioStream(micStr
 
 // 2. you want to manage the stream manually
 DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(micStream, queryParams:streamParams);
-
-transcriber.start();
 transcriber.stream.listen((res) {
     print(res.transcript);
 });
-transcriber.close(); // you can call start() after close() to restart the transcription
+
+transcriber.start();
+
+// you can pause and resume the transcription (stop sending audio data to the server)
+transcriber.pause(); 
+// ...
+transcriber.resume();
+
+// then close the stream when you're done, you can call start() again if you want to restart a transcription 
+transcriber.close(); 
 ```
 
 ## Text to speech
@@ -154,7 +159,7 @@ deepgram.isApiKeyValid()
 
 I created this package for my own needs since there are no dart sdk for deepgram. Happy to share !
 
-Don't hesitate to ask for new features or to contribute !
+Don't hesitate to ask for new features or to contribute on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
 ## Support
 

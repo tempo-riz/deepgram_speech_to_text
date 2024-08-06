@@ -115,7 +115,8 @@ void main() {
 
       transcriber.stream.listen((res) {
         try {
-          String currentTranscript = res.transcript;
+          print(res.type);
+          String currentTranscript = res.transcript ?? "";
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {
@@ -126,12 +127,18 @@ void main() {
       print("starting");
       await transcriber.start();
 
-      //close the stream after 8 seconds
-      await Future.delayed(Duration(seconds: 6), () {
-        print("stopping");
-        // controller.close();
-        transcriber.close();
-      });
+      await Future.delayed(Duration(seconds: 1));
+      print("pausing (waiting 14 seconds)");
+      transcriber.pause();
+
+      await Future.delayed(
+          Duration(seconds: 14)); // would normally close after 10 seconds
+      print("resuming");
+      transcriber.resume();
+
+      await Future.delayed(Duration(seconds: 5));
+      print("stopping");
+      transcriber.close();
 
       print(transcript);
       expect(transcript, isNotEmpty);
@@ -148,7 +155,7 @@ void main() {
 
       stream.listen((res) {
         try {
-          String currentTranscript = res.transcript;
+          String currentTranscript = res.transcript ?? "";
           print('Transcript: $currentTranscript');
           transcript += "$currentTranscript ";
         } catch (e) {

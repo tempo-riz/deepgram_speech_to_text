@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:deepgram_speech_to_text/src/types.dart';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:universal_file/universal_file.dart';
-import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+export 'types.dart';
 
 /// Class used to transcribe live audio streams.
 class DeepgramLiveTranscriber {
@@ -14,10 +16,13 @@ class DeepgramLiveTranscriber {
   DeepgramLiveTranscriber(this.apiKey,
       {required this.inputAudioStream, this.queryParams});
 
-  /// Flag which determines if transcriber was closed
+  /// if transcriber was closed
   bool _isClosed = false;
 
-  /// Flag which determines if web socket throwed error during initialization
+  /// if transcriber is paused
+  bool _isPaused = false;
+
+  /// if web socket throwed error during initialization
   bool _hasInitializationException = false;
 
   /// Your Deepgram API key
@@ -33,16 +38,13 @@ class DeepgramLiveTranscriber {
   final StreamController<DeepgramSttResult> _outputTranscriptStream =
       StreamController<DeepgramSttResult>();
   late WebSocketChannel _wsChannel;
+  Timer? _keepAliveTimer;
 
   /// Start the transcription process.
   Future<void> start() async {
     _wsChannel = WebSocketChannel.connect(
       buildUrl(_baseLiveUrl, null, queryParams),
       protocols: ['token', apiKey],
-      // equivalent to: (which woudn't work if kPlatformWeb is not defined)
-      // headers: {
-      //   Headers.authorizationHeader: 'Token $apiKey',
-      // },
     );
 
     try {
@@ -60,7 +62,7 @@ class DeepgramLiveTranscriber {
       if (_outputTranscriptStream.isClosed) {
         close();
       } else {
-        _outputTranscriptStream.add(DeepgramSttResult(event));
+        _handleWebSocketMessage(event);
       }
     }, onDone: () {
       close();
@@ -70,7 +72,7 @@ class DeepgramLiveTranscriber {
 
     // listen to the input audio stream and send it to the channel if it's still open
     inputAudioStream.listen((data) {
-      if (_isClosed) return;
+      if (_isClosed || _isPaused) return;
 
       if (_wsChannel.closeCode != null) {
         close();
@@ -90,9 +92,9 @@ class DeepgramLiveTranscriber {
 
     // Close ws sink only when ws has been connected, otherwise future will never complete
     if (!_hasInitializationException) {
-      await _wsChannel.sink.close(status.normalClosure);
+      await _wsChannel.sink.close();
     } else {
-      unawaited(_wsChannel.sink.close(status.normalClosure));
+      unawaited(_wsChannel.sink.close());
     }
 
     // If stream has listener then we can await for close result
@@ -101,6 +103,76 @@ class DeepgramLiveTranscriber {
     } else {
       // Otherwise when stream does not have listener, close will never return future
       unawaited(_outputTranscriptStream.close());
+    }
+  }
+
+  /// Stop sending audio data until resume is called.
+  ///
+  /// KeepAlive is sent every 8 seconds to keep the connection alive, you can disable it by setting keepAlive to false
+  void pause({bool keepAlive = true}) {
+    if (_isPaused) return;
+
+    if (keepAlive) {
+      // start the keep alive process https://developers.deepgram.com/docs/keep-alive
+      // send every 8 seconds a keep alive message (closes after 10 seconds of inactivity)
+      _keepAliveTimer = Timer.periodic(Duration(seconds: 8), (timer) {
+        if (!_isPaused || isClosed) {
+          timer.cancel();
+          _keepAliveTimer = null;
+          return;
+        }
+        try {
+          _wsChannel.sink.add(jsonEncode({'type': 'KeepAlive'}));
+        } catch (e) {
+          print('KeepAlive error: $e');
+        }
+      });
+    }
+    _isPaused = true;
+  }
+
+  /// Resume the transcription process.
+  void resume() {
+    if (!_isPaused) return;
+    _keepAliveTimer?.cancel();
+    _keepAliveTimer = null;
+    _isPaused = false;
+  }
+
+  /// Handle incoming WebSocket messages based on their type.
+  void _handleWebSocketMessage(dynamic event) {
+    // Parse the event data as JSON.
+    final message = jsonDecode(event);
+
+    // Determine the message type and handle accordingly.
+    if (message.containsKey('type')) {
+      switch (message['type']) {
+        case 'Results':
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'UtteranceEnd':
+          // Handle UtteranceEnd message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'Metadata':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'SpeechStarted':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        case 'Finalize':
+          // Handle Metadata message.
+          _outputTranscriptStream.add(DeepgramSttResult(event));
+          break;
+        default:
+          // Handle unknown message type.
+          print('Unknown message type: ${message['type']}');
+      }
+    } else {
+      // If message type is not specified, handle as a generic message.
+      _outputTranscriptStream.add(DeepgramSttResult(event));
     }
   }
 
@@ -250,55 +322,5 @@ class Deepgram {
     );
 
     return DeepgramTtsResult(data: res.bodyBytes, headers: res.headers);
-  }
-}
-
-/// Represents the result of a TTS request.
-class DeepgramTtsResult {
-  /// The audio data.
-  final Uint8List data;
-
-  /// The headers returned by the Deepgram API.
-  final Map<String, String> headers;
-
-  /// The content type of the audio data. (e.g. 'audio/wav')
-  String? get contentType => headers['content-type'];
-
-  DeepgramTtsResult({
-    required this.data,
-    required this.headers,
-  });
-
-  @override
-  String toString() {
-    return 'DeepgramTtsResult -> contentType: "$contentType", data size: ${data.length} bytes';
-  }
-}
-
-/// Represents the result of a STT request.
-class DeepgramSttResult {
-  DeepgramSttResult(this.json, {this.error});
-
-  /// The JSON string returned by the Deepgram API.
-  final String json;
-
-  /// The JSON string parsed into a map.
-  Map<String, dynamic> get map => jsonDecode(json);
-
-  /// The transcription from the JSON string.
-  // sync : ['results']['channels'][0]['alternatives'][0]['transcript']
-  // stream : ['channel']['alternatives'][0]['transcript']
-  String get transcript {
-    return toUt8(map.containsKey('results')
-        ? map['results']['channels'][0]['alternatives'][0]['transcript']
-        : map['channel']['alternatives'][0]['transcript']);
-  }
-
-  /// Error maybe returned by the Deepgram API.
-  final dynamic error;
-
-  @override
-  String toString() {
-    return 'DeepgramSttResult -> transcript: "$transcript"${error != null ? ',\n error: $error' : ''} \n\n consider using .json .map or .transcript !';
   }
 }
