@@ -55,7 +55,9 @@ class DeepgramLiveTranscriber {
       rethrow;
     }
 
+    // reset state in case of restart
     _isClosed = false;
+    _isPaused = false;
 
     // can listen only once to the channel
     _wsChannel.stream.listen((event) {
@@ -118,6 +120,7 @@ class DeepgramLiveTranscriber {
       // start the keep alive process https://developers.deepgram.com/docs/keep-alive
       // send every 8 seconds a keep alive message (closes after 10 seconds of inactivity)
       _keepAliveTimer = Timer.periodic(Duration(seconds: 8), (timer) {
+        // if transcriber is resumed or closed, cancel the timer
         if (!_isPaused || isClosed) {
           timer.cancel();
           _keepAliveTimer = null;

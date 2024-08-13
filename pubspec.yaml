@@ -1,7 +1,7 @@
 name: deepgram_speech_to_text
 description: >
   A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-to-Speech features on every platform.
-version: 2.3.1
+version: 2.3.2
 repository: https://github.com/tempo-riz/deepgram_speech_to_text
 
 environment:

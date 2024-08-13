@@ -1,16 +1,19 @@
-# 2.3.1
+## 2.3.2
+- Stop keepalive timer on close (thanks @PcolBP)
+  
+## 2.3.1
 - Updated docs
 
-# 2.3.0
+## 2.3.0
 - Added pause() and resume() methods for streaming
 - Add missing streaming features (thanks @DamienDeepgram)
 - Fixed: Memory leak + infinity future (thanks @PcolBP)
 - DeepgramSttResult now has .type getter, .transcript is safer and nullable
 
-# 2.2.2
+## 2.2.2
 - Fixed utf8 parsing issue
 
-# 2.2.1
+## 2.2.1
 - Update web_socket_channel dependency
 
 ## 2.2.0
