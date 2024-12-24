@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+import 'package:deepgram_speech_to_text/src/deepgram_live_listener.dart';
 
 void main() async {
   // Get your API key from the Deepgram console if you don't have one https://console.deepgram.com/
@@ -26,15 +27,15 @@ void main() async {
   // -------------------- From a file --------------------
   File audioFile = File('audio.wav');
 
-  final res1 = await deepgram.transcribeFromFile(audioFile);
+  final res1 = await deepgram.listen.file(audioFile);
   print(res1.transcript);
 
   // -------------------- From a URL --------------------
-  final res2 = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
+  final res2 = await deepgram.listen.url('https://somewhere/audio.wav');
   print(res2.transcript);
 
   // -------------------- From raw data --------------------
-  final res = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
+  final res = await deepgram.listen.bytes(List.from([1, 2, 3, 4, 5]));
   print(res.transcript);
 
   // -------------------- From a stream  --------------------
@@ -47,8 +48,7 @@ void main() async {
 
   Stream<List<int>> audioStream = audioFile.openRead(); // mic.stream ...
 
-  Stream<DeepgramSttResult> resStream =
-      deepgram.transcribeFromLiveAudioStream(audioStream);
+  Stream<DeepgramListenResult> resStream = deepgram.listen.live(audioStream);
 
   resStream.listen((res) {
     print(res.transcript);
@@ -56,8 +56,7 @@ void main() async {
 
   // If you prefer to have more control over the stream:
 
-  final DeepgramLiveTranscriber transcriber =
-      deepgram.createLiveTranscriber(audioStream);
+  final DeepgramLiveListener transcriber = deepgram.listen.liveListener(audioStream);
 
   transcriber.start();
 
@@ -69,7 +68,7 @@ void main() async {
 
   // -------------------- Text to Speech --------------------
   final dg = Deepgram(apiKey);
-  final res3 = await dg.speakFromText('Hello, how are you?');
+  final res3 = await dg.speak.text('Hello, how are you?');
   // then use res as you like
   res3.data; // Uint8List of audio data
   res3.contentType; // 'audio/wav'

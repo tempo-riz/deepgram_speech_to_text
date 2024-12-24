@@ -6,9 +6,9 @@ import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Class used to transcribe live audio streams.
-class DeepgramLiveTranscriber {
+class DeepgramLiveListener {
   /// Create a live transcriber with a start and close method
-  DeepgramLiveTranscriber(this.apiKey, {required this.inputAudioStream, this.queryParams});
+  DeepgramLiveListener(this.apiKey, {required this.inputAudioStream, this.queryParams});
 
   /// if transcriber was closed
   bool _isClosed = false;
@@ -29,7 +29,7 @@ class DeepgramLiveTranscriber {
   final Map<String, dynamic>? queryParams;
 
   final String _baseLiveUrl = 'wss://api.deepgram.com/v1/listen';
-  final StreamController<DeepgramSttResult> _outputTranscriptStream = StreamController<DeepgramSttResult>();
+  final StreamController<DeepgramListenResult> _outputTranscriptStream = StreamController<DeepgramListenResult>();
   late WebSocketChannel _wsChannel;
   Timer? _keepAliveTimer;
 
@@ -62,7 +62,7 @@ class DeepgramLiveTranscriber {
     }, onDone: () {
       close();
     }, onError: (error) {
-      _outputTranscriptStream.addError(DeepgramSttResult('', error: error));
+      _outputTranscriptStream.addError(DeepgramListenResult('', error: error));
     });
 
     // listen to the input audio stream and send it to the channel if it's still open
@@ -146,23 +146,23 @@ class DeepgramLiveTranscriber {
     if (message.containsKey('type')) {
       switch (message['type']) {
         case 'Results':
-          _outputTranscriptStream.add(DeepgramSttResult(event));
+          _outputTranscriptStream.add(DeepgramListenResult(event));
           break;
         case 'UtteranceEnd':
           // Handle UtteranceEnd message.
-          _outputTranscriptStream.add(DeepgramSttResult(event));
+          _outputTranscriptStream.add(DeepgramListenResult(event));
           break;
         case 'Metadata':
           // Handle Metadata message.
-          _outputTranscriptStream.add(DeepgramSttResult(event));
+          _outputTranscriptStream.add(DeepgramListenResult(event));
           break;
         case 'SpeechStarted':
           // Handle Metadata message.
-          _outputTranscriptStream.add(DeepgramSttResult(event));
+          _outputTranscriptStream.add(DeepgramListenResult(event));
           break;
         case 'Finalize':
           // Handle Metadata message.
-          _outputTranscriptStream.add(DeepgramSttResult(event));
+          _outputTranscriptStream.add(DeepgramListenResult(event));
           break;
         default:
           // Handle unknown message type.
@@ -170,12 +170,12 @@ class DeepgramLiveTranscriber {
       }
     } else {
       // If message type is not specified, handle as a generic message.
-      _outputTranscriptStream.add(DeepgramSttResult(event));
+      _outputTranscriptStream.add(DeepgramListenResult(event));
     }
   }
 
   /// The result stream of the transcription process.
-  Stream<DeepgramSttResult> get stream => _outputTranscriptStream.stream;
+  Stream<DeepgramListenResult> get stream => _outputTranscriptStream.stream;
 
   /// Getter for isClosed stream variable
   bool get isClosed => _isClosed;

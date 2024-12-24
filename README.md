@@ -25,6 +25,19 @@ You need something else ? Feel free to create issues, contribute to this project
 
 ## Features
 
+# Deepgram Dart/Flutter Library - WIP
+
+| Feature                        | Status        | Description                                           |
+|--------------------------------|---------------|-------------------------------------------------------|
+| `listen.file()`                | ✅ Implemented | File-based transcription                              |
+| `listen.url()`                 | ✅ Implemented | URL-based transcription                               |
+| `listen.bytes()`               | ✅ Implemented | Raw byte transcription                                 |
+| `listen.stream()`              | ✅ Implemented | Streaming transcription                               |
+| `speak.text()`                 | ✅ Implemented | Text-to-speech                                        |
+| `speak.live()`                 | ✅ Implemented | Real-time text-to-speech                              |
+| `agent.live()`                 | 🚧 In Progress | Real-time agent interaction (needs implementation)    |
+
+
 Speech to text (STT) transcription from:
 - Local file, remote URL, Raw data
 - Streaming audio 

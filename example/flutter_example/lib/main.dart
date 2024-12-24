@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
-import 'package:file_picker/file_picker.dart'
-    if (dart.library.html) 'file_picker/file_picker.dart';
+import 'package:file_picker/file_picker.dart' if (dart.library.html) 'file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,7 +49,7 @@ void fromFile() async {
     if (result == null) return;
     final data = result.files.first.bytes;
     if (data == null) return;
-    final res = await deepgram.transcribeFromBytes(data);
+    final res = await deepgram.listen.bytes(data);
     print(res.transcript);
   } else {
     // ios android ...
@@ -58,14 +57,14 @@ void fromFile() async {
     final path = await getLocalFilePath(fileName);
     final file = File(path);
 
-    final res = await deepgram.transcribeFromFile(file);
+    final res = await deepgram.listen.file(file);
     print(res.transcript);
   }
 }
 
 void fromUrl() async {
   print('Transcribing from url...');
-  final res = await deepgram.transcribeFromUrl(url);
+  final res = await deepgram.listen.url(url);
   print(res.transcript);
 }
 
@@ -73,7 +72,7 @@ void fromBytes() async {
   print('Transcribing from bytes...');
   final data = await rootBundle.load(fileAssetPath);
   final bytes = data.buffer.asUint8List();
-  final res = await deepgram.transcribeFromBytes(bytes);
+  final res = await deepgram.listen.bytes(bytes);
   print(res.transcript);
 }
 
@@ -97,8 +96,7 @@ void startStream() async {
     'sample_rate': 16000,
   };
 
-  final stream = deepgram.transcribeFromLiveAudioStream(audioStream,
-      queryParams: liveParams);
+  final stream = deepgram.listen.live(audioStream, queryParams: liveParams);
 
   stream.listen((res) {
     print(res.transcript);
@@ -128,7 +126,7 @@ void speakFromText() async {
     'encoding': "linear16",
     'container': "wav",
   });
-  final res = await deepgramTTS.speakFromText(
+  final res = await deepgramTTS.speak.text(
     "hello, how are you today ?",
   );
 
@@ -166,20 +164,16 @@ class MainApp extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                    onPressed: checkApiKey, child: Text('Check Api Key')),
+                ElevatedButton(onPressed: checkApiKey, child: Text('Check Api Key')),
                 Divider(),
                 ElevatedButton(onPressed: fromFile, child: Text('From File')),
                 ElevatedButton(onPressed: fromUrl, child: Text('From Url')),
                 ElevatedButton(onPressed: fromBytes, child: Text('From Bytes')),
                 Divider(),
-                ElevatedButton(
-                    onPressed: startStream, child: Text('Start Stream')),
-                ElevatedButton(
-                    onPressed: stopStream, child: Text('Stop Stream')),
+                ElevatedButton(onPressed: startStream, child: Text('Start Stream')),
+                ElevatedButton(onPressed: stopStream, child: Text('Stop Stream')),
                 Divider(),
-                ElevatedButton(
-                    onPressed: speakFromText, child: Text('Speak From Text')),
+                ElevatedButton(onPressed: speakFromText, child: Text('Speak From Text')),
               ],
             ),
           ),
