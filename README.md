@@ -23,7 +23,7 @@ A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-t
 You need something else ? Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
 
-# Features
+## Features
 
 | Feature                | Status        | Method(s)            |
 |------------------------|---------------|----------------------|
