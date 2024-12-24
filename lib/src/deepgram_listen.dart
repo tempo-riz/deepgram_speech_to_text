@@ -8,11 +8,7 @@ import 'package:universal_file/universal_file.dart';
 
 /// The Speech to Text API.
 class DeepgramListen {
-  DeepgramListen(
-    this._client,
-  ) {
-    print('DeepgramListen constructor');
-  }
+  DeepgramListen(this._client);
 
   final String _baseSttUrl = 'https://api.deepgram.com/v1/listen';
 
@@ -21,7 +17,8 @@ class DeepgramListen {
   /// Transcribe from raw data.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramListenResult> bytes(List<int> data, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramListenResult> bytes(List<int> data,
+      {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, _client.baseQueryParams, queryParams),
       headers: {
@@ -36,7 +33,8 @@ class DeepgramListen {
   /// Transcribe a local audio file.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramListenResult> file(File file, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramListenResult> file(File file,
+      {Map<String, dynamic>? queryParams}) async {
     assert(file.existsSync());
     final data = await file.readAsBytes();
 
@@ -46,7 +44,8 @@ class DeepgramListen {
   /// Transcribe a local audio file from path.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramListenResult> path(String path, {Map<String, dynamic>? queryParams}) {
+  Future<DeepgramListenResult> path(String path,
+      {Map<String, dynamic>? queryParams}) {
     final f = File(path);
     return file(f, queryParams: queryParams);
   }
@@ -54,7 +53,8 @@ class DeepgramListen {
   /// Transcribe a remote audio file from URL.
   ///
   /// https://developers.deepgram.com/reference/listen-remote
-  Future<DeepgramListenResult> url(String url, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramListenResult> url(String url,
+      {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, _client.baseQueryParams, queryParams),
       headers: {
@@ -85,7 +85,9 @@ class DeepgramListen {
       'sample_rate': sampleRate,
     };
     final baseParams = mergeMaps(requiredParams, _client.baseQueryParams);
-    return DeepgramLiveListener(_client.apiKey, inputAudioStream: audioStream, queryParams: mergeMaps(baseParams, queryParams));
+    return DeepgramLiveListener(_client.apiKey,
+        inputAudioStream: audioStream,
+        queryParams: mergeMaps(baseParams, queryParams));
   }
 
   /// Transcribe a live audio stream.
@@ -97,7 +99,8 @@ class DeepgramListen {
     String encoding = "linear16",
     int sampleRate = 16000,
   }) {
-    final transcriber = liveListener(audioStream, queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
+    final transcriber = liveListener(audioStream,
+        queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
 
     transcriber.start();
     return transcriber.stream;

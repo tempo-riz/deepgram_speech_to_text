@@ -11,7 +11,8 @@ void main() {
   group('[LISTEN - STT API]', () {
     final env = DotEnv()..load();
 
-    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse(
+        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     /// [simulating a live stream]
@@ -81,7 +82,8 @@ void main() {
     test('createLiveTranscriber', () async {
       final controller = getAudioStreamController();
       print("creating transcriber");
-      final DeepgramLiveListener transcriber = deepgram.listen.liveListener(controller.stream);
+      final DeepgramLiveListener transcriber =
+          deepgram.listen.liveListener(controller.stream);
 
       String transcript = '';
 
@@ -103,7 +105,8 @@ void main() {
       print("pausing (waiting 14 seconds)");
       transcriber.pause();
 
-      await Future.delayed(Duration(seconds: 14)); // would normally close after 10 seconds
+      await Future.delayed(
+          Duration(seconds: 14)); // would normally close after 10 seconds
       print("resuming");
       transcriber.resume();
 
@@ -119,7 +122,8 @@ void main() {
       final controller = getAudioStreamController();
       print("creating transcriber");
 
-      final Stream<DeepgramListenResult> stream = deepgram.listen.live(controller.stream);
+      final Stream<DeepgramListenResult> stream =
+          deepgram.listen.live(controller.stream);
 
       String transcript = '';
 

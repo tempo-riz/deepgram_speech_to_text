@@ -22,14 +22,16 @@ void main() {
         'filler_words': false,
         'punctuation': true,
       });
-      expect(url.toString(), 'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
+      expect(url.toString(),
+          'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
     });
   });
 
   group('[API CLIENT]', () {
     final env = DotEnv()..load();
 
-    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse(
+        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     test('isApiKeyValid', () async {

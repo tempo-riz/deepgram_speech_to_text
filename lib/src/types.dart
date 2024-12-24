@@ -18,8 +18,9 @@ class DeepgramListenResult {
   // stream : ['channel']['alternatives'][0]['transcript']
   String? get transcript {
     try {
-      return toUt8(
-          map.containsKey('results') ? map['results']['channels'][0]['alternatives'][0]['transcript'] : map['channel']['alternatives'][0]['transcript']);
+      return toUt8(map.containsKey('results')
+          ? map['results']['channels'][0]['alternatives'][0]['transcript']
+          : map['channel']['alternatives'][0]['transcript']);
     } catch (e) {
       return null;
     }

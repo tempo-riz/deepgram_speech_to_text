@@ -8,7 +8,8 @@ void main() {
   group('[SPEAK - TTS API]', () {
     final env = DotEnv()..load();
 
-    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse(
+        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     /// [simulating a live stream]
@@ -41,7 +42,8 @@ void main() {
     }
 
     test('speakFromText', () async {
-      final res = await deepgram.speak.text("hello, how are you today ?", queryParams: {
+      final res =
+          await deepgram.speak.text("hello, how are you today ?", queryParams: {
         'model': 'aura-asteria-en',
       });
       print(res.contentType);
@@ -51,7 +53,8 @@ void main() {
     test('speakFromTextStream', () async {
       final controller = getTextStreamController();
 
-      final speaker = deepgram.speak.liveSpeaker(controller.stream, queryParams: {
+      final speaker =
+          deepgram.speak.liveSpeaker(controller.stream, queryParams: {
         'model': 'aura-asteria-en',
       });
 

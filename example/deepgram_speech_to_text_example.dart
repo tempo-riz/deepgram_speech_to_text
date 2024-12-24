@@ -56,14 +56,15 @@ void main() async {
 
   // If you prefer to have more control over the stream:
 
-  final DeepgramLiveListener transcriber = deepgram.listen.liveListener(audioStream);
+  final DeepgramLiveListener listener =
+      deepgram.listen.liveListener(audioStream);
 
-  transcriber.start();
+  listener.start();
 
-  transcriber.stream.listen((json) {
+  listener.stream.listen((json) {
     print(json);
   });
-  transcriber.close();
+  listener.close();
   // after that you can call start() again, no need to create a new transcriber :)
 
   // -------------------- Text to Speech --------------------

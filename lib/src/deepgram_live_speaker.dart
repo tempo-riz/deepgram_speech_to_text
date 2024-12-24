@@ -11,7 +11,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 /// https://developers.deepgram.com/reference/transform-text-to-speech-websocket
 class DeepgramLiveSpeaker {
   /// Create a live transcriber with a start and close method
-  DeepgramLiveSpeaker(this.apiKey, {required this.inputTextStream, this.queryParams});
+  DeepgramLiveSpeaker(this.apiKey,
+      {required this.inputTextStream, this.queryParams});
 
   /// if transcriber was closed
   bool _isClosed = false;
@@ -28,7 +29,8 @@ class DeepgramLiveSpeaker {
   /// The additionals query parameters.
   final Map<String, dynamic>? queryParams;
   final String _baseLiveUrl = 'wss://api.deepgram.com/v1/speak';
-  final StreamController<DeepgramSpeakResult> _outputAudioStream = StreamController<DeepgramSpeakResult>();
+  final StreamController<DeepgramSpeakResult> _outputAudioStream =
+      StreamController<DeepgramSpeakResult>();
   late WebSocketChannel _wsChannel;
 
   /// Start the transcription process.
@@ -131,7 +133,8 @@ class DeepgramLiveSpeaker {
     // {"type":"Metadata","request_id":"1b051972-4d9e-47d3-83d0-6685786db1f2","model_name":"aura-asteria-en","model_version":"2024-11-19.0","model_uuid":"ecb76e9d-f2db-4127-8060-79b05590d22f"}
     try {
       if (msg is String) {
-        return _outputAudioStream.add(DeepgramSpeakResult(metadata: jsonDecode(msg)));
+        return _outputAudioStream
+            .add(DeepgramSpeakResult(metadata: jsonDecode(msg)));
       }
       // then raw audio data
       if (msg is Uint8List) {

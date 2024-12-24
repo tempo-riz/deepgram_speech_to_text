@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
-import 'package:file_picker/file_picker.dart' if (dart.library.html) 'file_picker/file_picker.dart';
+import 'package:file_picker/file_picker.dart'
+    if (dart.library.html) 'file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -140,24 +141,18 @@ void speakFromStream() async {
   int index = 0;
   final player = AudioPlayer();
 
+  // in this case it's best to create a buffer, stack the audio data and play it all at once using Deepgram.toWav()
   void playNext() async {
     if (index < audioResults.length) {
       final data = audioResults[index++];
-      print('Playing audio $index / ${audioResults.length} (${data.lengthInBytes} bytes)');
-      await player.play(BytesSource(data));
+      debugPrint(
+          'Playing audio $index / ${audioResults.length} (${data.lengthInBytes} bytes)');
+      await player.play(BytesSource(Deepgram.toWav(data)));
 
       return;
     }
     debugPrint('All audio played');
   }
-
-  player.onLog.listen((msg) {
-    debugPrint(msg);
-  }, onDone: () {
-    debugPrint('Player done');
-  }, onError: (err) {
-    debugPrint('Player error: $err');
-  });
 
   stream.listen((res) {
     debugPrint(res.toString());
@@ -194,17 +189,23 @@ class MainApp extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(onPressed: checkApiKey, child: Text('Check Api Key')),
+                ElevatedButton(
+                    onPressed: checkApiKey, child: Text('Check Api Key')),
                 Divider(),
                 ElevatedButton(onPressed: fromFile, child: Text('From File')),
                 ElevatedButton(onPressed: fromUrl, child: Text('From Url')),
                 ElevatedButton(onPressed: fromBytes, child: Text('From Bytes')),
                 Divider(),
-                ElevatedButton(onPressed: startStream, child: Text('Start Stream')),
-                ElevatedButton(onPressed: stopStream, child: Text('Stop Stream')),
+                ElevatedButton(
+                    onPressed: startStream, child: Text('Start Stream')),
+                ElevatedButton(
+                    onPressed: stopStream, child: Text('Stop Stream')),
                 Divider(),
-                ElevatedButton(onPressed: speakFromText, child: Text('Speak From Text')),
-                ElevatedButton(onPressed: speakFromStream, child: Text('Speak From Stream')),
+                ElevatedButton(
+                    onPressed: speakFromText, child: Text('Speak From Text')),
+                ElevatedButton(
+                    onPressed: speakFromStream,
+                    child: Text('Speak From Stream')),
               ],
             ),
           ),

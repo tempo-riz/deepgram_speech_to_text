@@ -1,5 +1,6 @@
 name: dart_example
 description: A sample command-line application.
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 

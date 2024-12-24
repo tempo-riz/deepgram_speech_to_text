@@ -7,7 +7,8 @@ import 'package:dotenv/dotenv.dart';
 void main() async {
   final env = DotEnv()..load();
 
-  final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+  final apiKey = env.getOrElse(
+      "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
   final deepgram = Deepgram(apiKey);
 
   List<String> story = [

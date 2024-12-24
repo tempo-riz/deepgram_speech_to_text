@@ -23,28 +23,19 @@ A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-t
 You need something else ? Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
 
-## Features
+# Features
 
-# Deepgram Dart/Flutter Library - WIP
-
-| Feature                        | Status        | Description                                           |
-|--------------------------------|---------------|-------------------------------------------------------|
-| `listen.file()`                | ✅ Implemented | File-based transcription                              |
-| `listen.url()`                 | ✅ Implemented | URL-based transcription                               |
-| `listen.bytes()`               | ✅ Implemented | Raw byte transcription                                 |
-| `listen.stream()`              | ✅ Implemented | Streaming transcription                               |
-| `speak.text()`                 | ✅ Implemented | Text-to-speech                                        |
-| `speak.live()`                 | ✅ Implemented | Real-time text-to-speech                              |
-| `agent.live()`                 | 🚧 In Progress | Real-time agent interaction (needs implementation)    |
+| Feature                | Status        | Method(s)            |
+|------------------------|---------------|----------------------|
+| File Transcription      | ✅ Implemented | `listen.file()` or `listen.path()`     |
+| URL Transcription       | ✅ Implemented | `listen.url()`       |
+| Byte Transcription      | ✅ Implemented | `listen.bytes()`     |
+| Streaming Transcription | ✅ Implemented | `listen.live()` or `listen.liveListener()`   |
+| Text-to-Speech          | ✅ Implemented | `speak.text()`       |
+| Live Text-to-Speech     | ✅ Implemented | `speak.live()` or `speak.liveSpeaker()`      |
+| Agent Interaction       | 🚧 (PR appreciated) | `agent.live()` |
 
 
-Speech to text (STT) transcription from:
-- Local file, remote URL, Raw data
-- Streaming audio 
-
-  
-Text to speech (TTS) is also supported
-- Text to raw audio data
 
 ## Getting started
 
@@ -56,20 +47,31 @@ First create the client with optional parameters
 ```dart
 String apiKey = 'your_api_key';
 
-Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
+// you can pass params here or in every method call depending on your needs
+final params = {
   'model': 'nova-2-general',
   'detect_language': true,
   'filler_words': false,
   'punctuation': true,
-    // more options here : https://developers.deepgram.com/reference/listen-file
-});
+  // more options here : https://developers.deepgram.com/reference/listen-file
+};
+
+Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
 ```
-Then you can transcribe audio from different sources :
+Then you can call the methods you need :
+
+```dart
+// Speech to text
+DeepgramListenResult res = await deepgram.listen.file(File('audio.wav'));
+
+// Text to speech
+DeepgramSpeakResult res = await deepgram.speak.text('Hello world');
+```
 
 ## STT Result
-All STT methods return a `DeepgramSttResult` object with the following properties : 
+All STT methods return a `DeepgramListenResult` object with the following properties : 
 ```dart
-class DeepgramSttResult {
+class DeepgramListenResult {
   final String json; // raw json response
   final Map<String, dynamic> map; // parsed json response into a map
   final String? transcript; // the transcript extracted from the response
@@ -77,24 +79,18 @@ class DeepgramSttResult {
 }
 ```
 
-## File
+## TTS Result
+All TTS methods return a `DeepgramSpeakResult` object with the following properties : 
 ```dart
-File audioFile = File('audio.wav');
-DeepgramSttResult res = await deepgram.transcribeFromFile(audioFile); // or transcribeFromPath() if you prefer
-print(res.transcript); // you can also acces .json and .map (json already parsed)
+class DeepgramSpeakResult {
+  final Uint8List? data; // raw audio data
+  final Map<String, dynamic>? metadata; /// The headers or metadata if streaming
+}
 ```
 
-## URL
-```dart
-final res = await deepgram.transcribeFromUrl('https://somewhere/audio.wav');
-```
 
-## Raw data
-```dart
-final res = await deepgram.transcribeFromBytes(List.from([1, 2, 3, 4, 5]));
-```
-
-## Stream
+## Streaming
+### Speech to text
 let's say from a microphone :
 ```dart
 //  https://pub.dev/packages/record (other packages would work too)
@@ -115,43 +111,64 @@ final streamParams = {
 then you got 2 options depending if you want to have more control over the stream or not :
 ```dart
 // 1. you want the stream to manage itself automatically
-Stream<DeepgramSttResult> stream = deepgram.transcribeFromLiveAudioStream(micStream, queryParams:streamParams);
+Stream<DeepgramListenResult> stream = deepgram.listen.live(micStream);
 
 // 2. you want to manage the stream manually
-DeepgramLiveTranscriber transcriber = deepgram.createLiveTranscriber(micStream, queryParams:streamParams);
-transcriber.stream.listen((res) {
+DeepgramLiveListener listener = deepgram.liveListener(micStream);
+listener.stream.listen((res) {
     print(res.transcript);
 });
 
-transcriber.start();
+listener.start();
 
 // you can pause and resume the transcription (stop sending audio data to the server)
-transcriber.pause(); 
+listener.pause(); 
 // ...
-transcriber.resume();
+listener.resume();
 
 // then close the stream when you're done, you can call start() again if you want to restart a transcription 
-transcriber.close(); 
+listener.close(); 
 ```
 
-## Text to speech
-
+### Text to speech
 ```dart
 Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
   'model': 'aura-asteria-en',
   'encoding': "linear16",
-  'container': "wav",
-  // options here: https://developers.deepgram.com/reference/text-to-speech-api
+  'sample_rate': 16000,
+// options here: https://developers.deepgram.com/reference/text-to-speech-api
+});
+```
 
-  final res = await deepgram.speakFromText('Hello world');
-  print(res.data); // raw audio data that you can use as you wish. Check flutter example for a simple player
+then again you got 2 options:
+```dart
+final textStream = ...
+// 1. you want the stream to manage itself automatically
+Stream<DeepgramSpeakResult> stream = deepgram.speak.live(textStream);
+
+// 2. you want to manage the stream manually
+DeepgramLiveSpeaker speaker = deepgram.liveListener(textStream);
+speaker.stream.listen((res) {
+    print(res);
+    // if you want to use the audio, simplest way is to use Deepgram.toWav(res.data) !
 });
 
+speaker.start();
+// https://developers.deepgram.com/docs/tts-ws-flush 
+speaker.flush(); 
+//https://developers.deepgram.com/docs/tts-ws-clear
+speaker.clear();
+
+// then close the stream when you're done, you can call start() again if you want to restart a transcription 
+speaker.close(); 
 ```
+
 
 For more detailed usage check the `/example` tab
 
-There is a full flutter demo [here](https://github.com/tempo-riz/deepgram_speech_to_text/tree/main/example/flutter_example)
+There is a flutter demo [here](https://github.com/tempo-riz/deepgram_speech_to_text/tree/main/example/flutter_demo)
+
+And a dart demo [here](https://github.com/tempo-riz/deepgram_speech_to_text/tree/main/example/dart_demo)
 
 Tested on Android and iOS, but should work on other platforms too.
 
