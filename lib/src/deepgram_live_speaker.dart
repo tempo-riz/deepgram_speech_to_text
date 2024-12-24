@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
 import 'package:deepgram_speech_to_text/src/utils.dart';
@@ -26,7 +28,7 @@ class DeepgramLiveSpeaker {
   /// The additionals query parameters.
   final Map<String, dynamic>? queryParams;
   final String _baseLiveUrl = 'wss://api.deepgram.com/v1/speak';
-  final StreamController<DeepgramListenResult> _outputTranscriptStream = StreamController<DeepgramListenResult>();
+  final StreamController<DeepgramSpeakResult> _outputAudioStream = StreamController<DeepgramSpeakResult>();
   late WebSocketChannel _wsChannel;
 
   /// Start the transcription process.
@@ -49,7 +51,7 @@ class DeepgramLiveSpeaker {
 
     // can listen only once to the channel
     _wsChannel.stream.listen((event) {
-      if (_outputTranscriptStream.isClosed) {
+      if (_outputAudioStream.isClosed) {
         close();
       } else {
         _handleWebSocketMessage(event);
@@ -57,11 +59,11 @@ class DeepgramLiveSpeaker {
     }, onDone: () {
       close();
     }, onError: (error) {
-      _outputTranscriptStream.addError(DeepgramListenResult('', error: error));
+      _outputAudioStream.addError(DeepgramSpeakResult(error: error));
     });
 
-    // listen to the input audio stream and send it to the channel if it's still open
-    inputTextStream.listen((data) {
+    // listen to the input text stream and send it to the channel if it's still open
+    inputTextStream.listen((text) {
       if (_isClosed) return;
 
       if (_wsChannel.closeCode != null) {
@@ -69,10 +71,37 @@ class DeepgramLiveSpeaker {
         return;
       }
 
-      _wsChannel.sink.add(data);
+      final msg = {
+        'type': 'Speak',
+        'text': text,
+      };
+
+      _wsChannel.sink.add(jsonEncode(msg));
     }, onDone: () {
       close();
     });
+  }
+
+  /// https://developers.deepgram.com/docs/tts-ws-flush
+  Future<void> flush() async {
+    if (_isClosed) return;
+
+    final msg = {
+      'type': 'Flush',
+    };
+
+    _wsChannel.sink.add(jsonEncode(msg));
+  }
+
+  /// https://developers.deepgram.com/docs/tts-ws-clear
+  Future<void> clear() async {
+    if (_isClosed) return;
+
+    final msg = {
+      'type': 'Clear',
+    };
+
+    _wsChannel.sink.add(jsonEncode(msg));
   }
 
   /// End the transcription process.
@@ -88,22 +117,34 @@ class DeepgramLiveSpeaker {
     }
 
     // If stream has listener then we can await for close result
-    if (_outputTranscriptStream.hasListener) {
-      await _outputTranscriptStream.close();
+    if (_outputAudioStream.hasListener) {
+      await _outputAudioStream.close();
     } else {
       // Otherwise when stream does not have listener, close will never return future
-      unawaited(_outputTranscriptStream.close());
+      unawaited(_outputAudioStream.close());
     }
   }
 
   /// Handle incoming WebSocket messages based on their type.
-  void _handleWebSocketMessage(dynamic event) {
-    // If message type is not specified, handle as a generic message.
-    _outputTranscriptStream.add(DeepgramListenResult(event));
+  void _handleWebSocketMessage(dynamic msg) {
+    // first msg is json with metadata :
+    // {"type":"Metadata","request_id":"1b051972-4d9e-47d3-83d0-6685786db1f2","model_name":"aura-asteria-en","model_version":"2024-11-19.0","model_uuid":"ecb76e9d-f2db-4127-8060-79b05590d22f"}
+    try {
+      if (msg is String) {
+        return _outputAudioStream.add(DeepgramSpeakResult(metadata: jsonDecode(msg)));
+      }
+      // then raw audio data
+      if (msg is Uint8List) {
+        return _outputAudioStream.add(DeepgramSpeakResult(data: msg));
+      }
+    } catch (e) {
+      print('Error in _handleWebSocketMessage: $e');
+      return _outputAudioStream.addError(DeepgramSpeakResult(error: e));
+    }
   }
 
   /// The result stream of the transcription process.
-  Stream<DeepgramListenResult> get stream => _outputTranscriptStream.stream;
+  Stream<DeepgramSpeakResult> get stream => _outputAudioStream.stream;
 
   /// Getter for isClosed stream variable
   bool get isClosed => _isClosed;

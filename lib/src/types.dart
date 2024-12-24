@@ -25,6 +25,7 @@ class DeepgramListenResult {
     }
   }
 
+  /// known types: 'Results', 'UtteranceEnd', 'Metadata', 'SpeechStarted', 'Finalize' ...
   String? get type {
     try {
       return map['type'];
@@ -45,25 +46,25 @@ class DeepgramListenResult {
 /// Represents the result of a TTS request.
 class DeepgramSpeakResult {
   /// The audio data.
-  final Uint8List data;
+  final Uint8List? data;
 
-  /// The headers returned by the Deepgram API.
-  final Map<String, String> headers;
+  /// The headers or metadata if streaming
+  final Map<String, dynamic>? metadata;
 
   /// The content type of the audio data. (e.g. 'audio/wav')
-  String? get contentType => headers['content-type'];
+  String? get contentType => metadata?['content-type'];
 
   /// Error maybe returned by the Deepgram API.
   final dynamic error;
 
   DeepgramSpeakResult({
-    required this.data,
-    required this.headers,
+    this.data,
+    this.metadata,
     this.error,
   });
 
   @override
   String toString() {
-    return 'DeepgramTtsResult -> contentType: "$contentType", data size: ${data.length} bytes';
+    return 'DeepgramTtsResult -> metadata: $metadata, data: ${data?.length ?? 0} bytes${error != null ? ',\n error: $error' : ''}';
   }
 }

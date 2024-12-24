@@ -130,13 +130,15 @@ void speakFromText() async {
     "hello, how are you today ?",
   );
 
+  if (res.data == null) return print('No audio data found');
+
   final player = AudioPlayer();
 
   if (kIsWeb) {
-    await player.play(BytesSource(res.data));
+    await player.play(BytesSource(res.data!));
   } else {
     int random = DateTime.now().millisecondsSinceEpoch;
-    final path = await saveDataToFile("$random.wav", res.data);
+    final path = await saveDataToFile("$random.wav", res.data!);
     await player.play(DeviceFileSource(path));
   }
 }

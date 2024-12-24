@@ -28,10 +28,10 @@ class DeepgramSpeak {
       }),
     );
 
-    return DeepgramSpeakResult(data: res.bodyBytes, headers: res.headers);
+    return DeepgramSpeakResult(data: res.bodyBytes, metadata: res.headers);
   }
 
-  /// Create a live transcriber with a start and close method.
+  /// Create a live speaker with a start(), flush(), clear() and close() method.
   ///
   /// see [DeepgramLiveSpeaker] which you can also use directly
   ///
@@ -40,13 +40,14 @@ class DeepgramSpeak {
     return DeepgramLiveSpeaker(_client.apiKey, inputTextStream: audioStream, queryParams: mergeMaps(_client.baseQueryParams, queryParams));
   }
 
-  /// Transcribe a live audio stream.
+  /// Convert live text to speech.
   ///
   /// https://developers.deepgram.com/docs/streaming-text-to-speech
-  Stream<DeepgramListenResult> live(Stream<String> audioStream, {Map<String, dynamic>? queryParams}) {
+  Stream<DeepgramSpeakResult> live(Stream<String> audioStream, {Map<String, dynamic>? queryParams}) {
     DeepgramLiveSpeaker transcriber = liveSpeaker(audioStream, queryParams: queryParams);
 
     transcriber.start();
+
     return transcriber.stream;
   }
 }

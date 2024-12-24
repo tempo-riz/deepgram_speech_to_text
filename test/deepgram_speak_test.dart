@@ -49,13 +49,31 @@ void main() {
     });
 
     test('speakFromTextStream', () async {
-      final textStream = getTextStreamController().stream;
+      final controller = getTextStreamController();
 
-      final res = deepgram.speak.liveSpeaker(textStream, queryParams: {
+      final speaker = deepgram.speak.liveSpeaker(controller.stream, queryParams: {
         'model': 'aura-asteria-en',
       });
 
-      // TODO
+      speaker.start();
+
+      final results = <DeepgramSpeakResult>[];
+
+      speaker.stream.listen((res) {
+        print(res);
+        results.add(res);
+      }, onDone: () {
+        print('done');
+      }, onError: (e) {
+        print('error: $e');
+      });
+
+      await Future.delayed(Duration(seconds: 3));
+
+      await controller.close();
+
+      // make sure there are results with data
+      expect(results.where((res) => res.data != null), isNotEmpty);
     });
   });
 }

@@ -138,40 +138,8 @@ class DeepgramLiveListener {
   }
 
   /// Handle incoming WebSocket messages based on their type.
-  void _handleWebSocketMessage(dynamic event) {
-    // Parse the event data as JSON.
-    final message = jsonDecode(event);
-
-    // Determine the message type and handle accordingly.
-    if (message.containsKey('type')) {
-      switch (message['type']) {
-        case 'Results':
-          _outputTranscriptStream.add(DeepgramListenResult(event));
-          break;
-        case 'UtteranceEnd':
-          // Handle UtteranceEnd message.
-          _outputTranscriptStream.add(DeepgramListenResult(event));
-          break;
-        case 'Metadata':
-          // Handle Metadata message.
-          _outputTranscriptStream.add(DeepgramListenResult(event));
-          break;
-        case 'SpeechStarted':
-          // Handle Metadata message.
-          _outputTranscriptStream.add(DeepgramListenResult(event));
-          break;
-        case 'Finalize':
-          // Handle Metadata message.
-          _outputTranscriptStream.add(DeepgramListenResult(event));
-          break;
-        default:
-          // Handle unknown message type.
-          print('Unknown message type: ${message['type']}');
-      }
-    } else {
-      // If message type is not specified, handle as a generic message.
-      _outputTranscriptStream.add(DeepgramListenResult(event));
-    }
+  void _handleWebSocketMessage(String json) {
+    _outputTranscriptStream.add(DeepgramListenResult(json));
   }
 
   /// The result stream of the transcription process.
