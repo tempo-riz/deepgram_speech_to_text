@@ -33,18 +33,38 @@ class DeepgramSpeak {
 
   /// Create a live speaker with a start(), flush(), clear() and close() method.
   ///
+  /// (currently only wav is supported)
+  ///
   /// see [DeepgramLiveSpeaker] which you can also use directly
   ///
   /// https://developers.deepgram.com/docs/streaming-text-to-speech
-  DeepgramLiveSpeaker liveSpeaker(Stream<String> audioStream, {Map<String, dynamic>? queryParams}) {
-    return DeepgramLiveSpeaker(_client.apiKey, inputTextStream: audioStream, queryParams: mergeMaps(_client.baseQueryParams, queryParams));
+  DeepgramLiveSpeaker liveSpeaker(
+    Stream<String> audioStream, {
+    Map<String, dynamic>? queryParams,
+    String encoding = 'linear16',
+    int sampleRate = 16000,
+  }) {
+    // make sure encoding and sample rate are set
+    final requiredParams = {
+      'encoding': encoding,
+      'sample_rate': sampleRate,
+    };
+
+    final baseParams = mergeMaps(requiredParams, _client.baseQueryParams);
+
+    return DeepgramLiveSpeaker(_client.apiKey, inputTextStream: audioStream, queryParams: mergeMaps(baseParams, queryParams));
   }
 
-  /// Convert live text to speech.
+  /// Convert live text to speech. (currently only wav is supported)
   ///
   /// https://developers.deepgram.com/docs/streaming-text-to-speech
-  Stream<DeepgramSpeakResult> live(Stream<String> audioStream, {Map<String, dynamic>? queryParams}) {
-    DeepgramLiveSpeaker transcriber = liveSpeaker(audioStream, queryParams: queryParams);
+  Stream<DeepgramSpeakResult> live(
+    Stream<String> audioStream, {
+    Map<String, dynamic>? queryParams,
+    String encoding = 'linear16',
+    int sampleRate = 16000,
+  }) {
+    DeepgramLiveSpeaker transcriber = liveSpeaker(audioStream, queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
 
     transcriber.start();
 

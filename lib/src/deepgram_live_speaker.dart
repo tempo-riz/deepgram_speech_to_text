@@ -8,7 +8,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Class used to transcribe live audio streams.
 ///
-/// https://developers.deepgram.com/docs/streaming-text-to-speech
+/// https://developers.deepgram.com/reference/transform-text-to-speech-websocket
 class DeepgramLiveSpeaker {
   /// Create a live transcriber with a start and close method
   DeepgramLiveSpeaker(this.apiKey, {required this.inputTextStream, this.queryParams});
@@ -135,6 +135,10 @@ class DeepgramLiveSpeaker {
       }
       // then raw audio data
       if (msg is Uint8List) {
+        // final int? sampleRate = queryParams?['sample_rate'];
+        // assert(sampleRate != null, 'sample_rate is required');
+
+        // final wavData = toWav(msg, sampleRate!);
         return _outputAudioStream.add(DeepgramSpeakResult(data: msg));
       }
     } catch (e) {

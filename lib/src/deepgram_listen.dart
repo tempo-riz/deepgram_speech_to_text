@@ -73,15 +73,31 @@ class DeepgramListen {
   /// see [DeepgramLiveListener] which you can also use directly
   ///
   /// https://developers.deepgram.com/reference/listen-live
-  DeepgramLiveListener liveListener(Stream<List<int>> audioStream, {Map<String, dynamic>? queryParams}) {
-    return DeepgramLiveListener(_client.apiKey, inputAudioStream: audioStream, queryParams: mergeMaps(_client.baseQueryParams, queryParams));
+  DeepgramLiveListener liveListener(
+    Stream<List<int>> audioStream, {
+    Map<String, dynamic>? queryParams,
+    String encoding = "linear16",
+    int sampleRate = 16000,
+  }) {
+    // make sure encoding and sample rate are set
+    final requiredParams = {
+      'encoding': encoding,
+      'sample_rate': sampleRate,
+    };
+    final baseParams = mergeMaps(requiredParams, _client.baseQueryParams);
+    return DeepgramLiveListener(_client.apiKey, inputAudioStream: audioStream, queryParams: mergeMaps(baseParams, queryParams));
   }
 
   /// Transcribe a live audio stream.
   ///
   /// https://developers.deepgram.com/reference/listen-live
-  Stream<DeepgramListenResult> live(Stream<List<int>> audioStream, {Map<String, dynamic>? queryParams}) {
-    final transcriber = liveListener(audioStream, queryParams: queryParams);
+  Stream<DeepgramListenResult> live(
+    Stream<List<int>> audioStream, {
+    Map<String, dynamic>? queryParams,
+    String encoding = "linear16",
+    int sampleRate = 16000,
+  }) {
+    final transcriber = liveListener(audioStream, queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
 
     transcriber.start();
     return transcriber.stream;
