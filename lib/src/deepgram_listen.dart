@@ -6,25 +6,26 @@ import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:universal_file/universal_file.dart';
 
+/// The Speech to Text API.
 class DeepgramListen {
   DeepgramListen(
-    this.client,
+    this._client,
   ) {
     print('DeepgramListen constructor');
   }
 
   final String _baseSttUrl = 'https://api.deepgram.com/v1/listen';
 
-  final Deepgram client;
+  final Deepgram _client;
 
   /// Transcribe from raw data.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramSttResult> transcribeFromBytes(List<int> data, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramSttResult> bytes(List<int> data, {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      buildUrl(_baseSttUrl, client.baseQueryParams, queryParams),
+      buildUrl(_baseSttUrl, _client.baseQueryParams, queryParams),
       headers: {
-        Headers.authorization: 'Token ${client.apiKey}',
+        Headers.authorization: 'Token ${_client.apiKey}',
       },
       body: data,
     );
@@ -35,29 +36,29 @@ class DeepgramListen {
   /// Transcribe a local audio file.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramSttResult> transcribeFromFile(File file, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramSttResult> file(File file, {Map<String, dynamic>? queryParams}) async {
     assert(file.existsSync());
-    final bytes = await file.readAsBytes();
+    final data = await file.readAsBytes();
 
-    return transcribeFromBytes(bytes, queryParams: queryParams);
+    return bytes(data, queryParams: queryParams);
   }
 
   /// Transcribe a local audio file from path.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramSttResult> transcribeFromPath(String path, {Map<String, dynamic>? queryParams}) {
-    final file = File(path);
-    return transcribeFromFile(file, queryParams: queryParams);
+  Future<DeepgramSttResult> path(String path, {Map<String, dynamic>? queryParams}) {
+    final f = File(path);
+    return file(f, queryParams: queryParams);
   }
 
   /// Transcribe a remote audio file from URL.
   ///
   /// https://developers.deepgram.com/reference/listen-remote
-  Future<DeepgramSttResult> transcribeFromUrl(String url, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramSttResult> url(String url, {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      buildUrl(_baseSttUrl, client.baseQueryParams, queryParams),
+      buildUrl(_baseSttUrl, _client.baseQueryParams, queryParams),
       headers: {
-        Headers.authorization: 'Token ${client.apiKey}',
+        Headers.authorization: 'Token ${_client.apiKey}',
         Headers.contentType: 'application/json',
         Headers.accept: 'application/json',
       },
@@ -72,15 +73,15 @@ class DeepgramListen {
   /// see [DeepgramLiveTranscriber] which you can also use directly
   ///
   /// https://developers.deepgram.com/reference/listen-live
-  DeepgramLiveTranscriber createLiveTranscriber(Stream<List<int>> audioStream, {Map<String, dynamic>? queryParams}) {
-    return DeepgramLiveTranscriber(client.apiKey, inputAudioStream: audioStream, queryParams: mergeMaps(client.baseQueryParams, queryParams));
+  DeepgramLiveTranscriber liveTranscriber(Stream<List<int>> audioStream, {Map<String, dynamic>? queryParams}) {
+    return DeepgramLiveTranscriber(_client.apiKey, inputAudioStream: audioStream, queryParams: mergeMaps(_client.baseQueryParams, queryParams));
   }
 
   /// Transcribe a live audio stream.
   ///
   /// https://developers.deepgram.com/reference/listen-live
-  Stream<DeepgramSttResult> transcribeFromLiveAudioStream(Stream<List<int>> audioStream, {Map<String, dynamic>? queryParams}) {
-    DeepgramLiveTranscriber transcriber = createLiveTranscriber(audioStream, queryParams: queryParams);
+  Stream<DeepgramSttResult> live(Stream<List<int>> audioStream, {Map<String, dynamic>? queryParams}) {
+    DeepgramLiveTranscriber transcriber = liveTranscriber(audioStream, queryParams: queryParams);
 
     transcriber.start();
     return transcriber.stream;

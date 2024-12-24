@@ -30,10 +30,10 @@ class Deepgram {
   late final DeepgramListen _listen;
   late final DeepgramSpeak _speak;
 
-  /// Get the Text to Speech
+  /// Get the Text to Speech API
   DeepgramSpeak get speak => _speak;
 
-  /// Get the Speech to Text
+  /// Get the Speech to Text API
   DeepgramListen get listen => _listen;
 
   /// Check if the API key is valid and if you still have credits
