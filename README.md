@@ -24,17 +24,17 @@ You need something else ? Feel free to create issues, contribute to this project
 
 ## Features
 
-| **Transcription** 🎤           | **Status** | **Methods**                              |
+| **Speech-to-Text** 🎤           | **Status** | **Methods**                              |
 |------------------------------|------------|------------------------------------------|
-| **File Transcription**        | ✅         | `listen.file()`, `listen.path()`         |
-| **URL Transcription**         | ✅         | `listen.url()`                           |
-| **Byte Transcription**        | ✅         | `listen.bytes()`                         |
-| **Streaming Transcription**   | ✅         | `listen.live()`, `listen.liveListener()` |
+| **From File**        | ✅         | `listen.file()`, `listen.path()`         |
+| **From URL**         | ✅         | `listen.url()`                           |
+| **From Byte**        | ✅         | `listen.bytes()`                         |
+| **From Audio Stream**   | ✅         | `listen.live()`, `listen.liveListener()` |
 
 | **Text-to-Speech** 🗣️           | **Status** | **Methods**                              |
 |------------------------------|------------|------------------------------------------|
-| **Text-to-Speech**            | ✅         | `speak.text()`                           |
-| **Live Text-to-Speech**       | ✅         | `speak.live()`, `speak.liveSpeaker()`    |
+| **From Text**            | ✅         | `speak.text()`                           |
+| **From Text Stream**       | ✅         | `speak.live()`, `speak.liveSpeaker()`    |
 
 | **Agent Interaction** 🤖       | **Status** | **Methods**                              |
 |------------------------------|------------|------------------------------------------|
