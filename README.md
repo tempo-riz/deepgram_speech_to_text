@@ -22,19 +22,24 @@ A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-t
 
 You need something else ? Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
-
 ## Features
 
-| Feature                | Status        | Method(s)            |
-|------------------------|---------------|----------------------|
-| File Transcription      | ✅ Implemented | `listen.file()` or `listen.path()`     |
-| URL Transcription       | ✅ Implemented | `listen.url()`       |
-| Byte Transcription      | ✅ Implemented | `listen.bytes()`     |
-| Streaming Transcription | ✅ Implemented | `listen.live()` or `listen.liveListener()`   |
-| Text-to-Speech          | ✅ Implemented | `speak.text()`       |
-| Live Text-to-Speech     | ✅ Implemented | `speak.live()` or `speak.liveSpeaker()`      |
-| Agent Interaction       | 🚧 (PR appreciated) | `agent.live()` |
+| **Transcription** 🎤           | **Status** | **Methods**                              |
+|------------------------------|------------|------------------------------------------|
+| **File Transcription**        | ✅         | `listen.file()`, `listen.path()`         |
+| **URL Transcription**         | ✅         | `listen.url()`                           |
+| **Byte Transcription**        | ✅         | `listen.bytes()`                         |
+| **Streaming Transcription**   | ✅         | `listen.live()`, `listen.liveListener()` |
 
+| **Text-to-Speech** 🗣️           | **Status** | **Methods**                              |
+|------------------------------|------------|------------------------------------------|
+| **Text-to-Speech**            | ✅         | `speak.text()`                           |
+| **Live Text-to-Speech**       | ✅         | `speak.live()`, `speak.liveSpeaker()`    |
+
+| **Agent Interaction** 🤖       | **Status** | **Methods**                              |
+|------------------------------|------------|------------------------------------------|
+| **Agent Interaction**         | 🚧         | `agent.live()`                           |
+_PRs are welcome for all work-in-progress 🚧 features_
 
 
 ## Getting started
@@ -47,18 +52,16 @@ First create the client with optional parameters
 ```dart
 String apiKey = 'your_api_key';
 
-// you can pass params here or in every method call depending on your needs
-final params = {
+// you can pass params in client's baseQueryParams or in every method's queryParams
+Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
   'model': 'nova-2-general',
   'detect_language': true,
   'filler_words': false,
   'punctuation': true,
   // more options here : https://developers.deepgram.com/reference/listen-file
-};
-
-Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
+});
 ```
-Then you can call the methods you need :
+Then you can call the methods you need under the propper listen or speak subclass:
 
 ```dart
 // Speech to text
@@ -107,7 +110,10 @@ final streamParams = {
   'encoding': 'linear16',
   'sample_rate': 16000,
 };
+
+Deepgram deepgram = Deepgram(apiKey, baseQueryParams: streamParams);
 ```
+
 then you got 2 options depending if you want to have more control over the stream or not :
 ```dart
 // 1. you want the stream to manage itself automatically
@@ -118,7 +124,7 @@ DeepgramLiveListener listener = deepgram.liveListener(micStream);
 listener.stream.listen((res) {
     print(res.transcript);
 });
-
+// connect to the servers and start sending data
 listener.start();
 
 // you can pause and resume the transcription (stop sending audio data to the server)
@@ -153,9 +159,12 @@ speaker.stream.listen((res) {
     // if you want to use the audio, simplest way is to use Deepgram.toWav(res.data) !
 });
 
+// start sending data to the servers
 speaker.start();
+
 // https://developers.deepgram.com/docs/tts-ws-flush 
-speaker.flush(); 
+speaker.flush();
+
 //https://developers.deepgram.com/docs/tts-ws-clear
 speaker.clear();
 
@@ -166,9 +175,9 @@ speaker.close();
 
 For more detailed usage check the `/example` tab
 
-There is a flutter demo [here](https://github.com/tempo-riz/deepgram_speech_to_text/tree/main/example/flutter_demo)
+- Flutter demo [here](https://github.com/tempo-riz/deepgram_speech_to_text/tree/main/example/flutter_demo)
 
-And a dart demo [here](https://github.com/tempo-riz/deepgram_speech_to_text/tree/main/example/dart_demo)
+- Dart demo [here](https://github.com/tempo-riz/deepgram_speech_to_text/tree/main/example/dart_demo)
 
 Tested on Android and iOS, but should work on other platforms too.
 
