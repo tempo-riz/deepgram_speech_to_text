@@ -39,6 +39,7 @@ You need something else ? Feel free to create issues, contribute to this project
 | **Agent Interaction** 🤖       | **Status** | **Methods**                              |
 |------------------------------|------------|------------------------------------------|
 | **Agent Interaction**         | 🚧         | `agent.live()`                           |
+
 _PRs are welcome for all work-in-progress 🚧 features_
 
 
