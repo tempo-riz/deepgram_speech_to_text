@@ -1,12 +1,17 @@
+## 3.0.1
+- Updated docs
+- added missing exports
+
 ## 3.0.0
 **Breaking changes**
-now you can find all method with their respectives subclasses e.g:
+
+Now you can find all method under deepgram.listen and deepgram.speak
 - `deepgram.transcribeFromFile()` -> `deepgram.listen.file()`
 - `deepgram.speakFromText()` -> `deepgram.speak.text()`
   
-- added support for  `deepgram.speak.live()` - `deepgram.toWav()` makes the audio data readable 
-- updated examples (flutter and dart)
-- added mandatory default query params to every streaming method (encoding, sampleRate)
+- Added support for  `deepgram.speak.live()` - `deepgram.toWav()` makes the audio data readable 
+- Updated examples (flutter and dart)
+- Added mandatory default query params to every streaming method (encoding, sampleRate)
 
 ## 2.3.2
 - Stop keepalive timer on close (thanks @PcolBP)
