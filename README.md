@@ -24,21 +24,25 @@ You need something else ? Feel free to create issues, contribute to this project
 
 ## Features
 
-| **Speech-to-Text** 🎤           | **Status** | **Methods**                              |
+| **Speech-to-Text** 🎤         | **Status** | **Methods**                              |
 |------------------------------|------------|------------------------------------------|
-| **From File**        | ✅         | `listen.file()`, `listen.path()`         |
-| **From URL**         | ✅         | `listen.url()`                           |
-| **From Byte**        | ✅         | `listen.bytes()`                         |
-| **From Audio Stream**   | ✅         | `listen.live()`, `listen.liveListener()` |
+| From File                    | ✅         | `listen.file()`, `listen.path()`         |
+| From URL                     | ✅         | `listen.url()`                           |
+| From Byte                    | ✅         | `listen.bytes()`                         |
+| From Audio Stream            | ✅         | `listen.live()`, `listen.liveListener()` |
 
-| **Text-to-Speech** 🗣️           | **Status** | **Methods**                              |
-|------------------------------|------------|------------------------------------------|
-| **From Text**            | ✅         | `speak.text()`                           |
-| **From Text Stream**       | ✅         | `speak.live()`, `speak.liveSpeaker()`    |
+---
 
-| **Agent Interaction** 🤖       | **Status** | **Methods**                              |
+| **Text-to-Speech** 🗣️        | **Status** | **Methods**                              |
 |------------------------------|------------|------------------------------------------|
-| **Agent Interaction**         | 🚧         | `agent.live()`                           |
+| From Text                    | ✅         | `speak.text()`                           |
+| From Text Stream             | ✅         | `speak.live()`, `speak.liveSpeaker()`    |
+
+---
+
+| **Agent Interaction** 🤖     | **Status** | **Methods**                              |
+|------------------------------|------------|------------------------------------------|
+| Agent Interaction            | 🚧         | `agent.live()`                           |
 
 _PRs are welcome for all work-in-progress 🚧 features_
 
