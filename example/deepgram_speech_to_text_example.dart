@@ -1,76 +1,39 @@
 import 'dart:io';
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
-import 'package:deepgram_speech_to_text/src/deepgram_live_listener.dart';
 
 void main() async {
   // Get your API key from the Deepgram console if you don't have one https://console.deepgram.com/
   String apiKey = "YOUR_API_KEY";
 
-  // You can pass optional query parameters in :
-  // - the constructore for all requests
-  // - the method for a specific request
-  // reference : https://developers.deepgram.com/reference/listen-file
+  // https://developers.deepgram.com/reference/deepgram-api-overview
   Map<String, dynamic> params = {
     'model': 'nova-2-general',
     'detect_language': true,
     'filler_words': false,
     'punctuation': true,
-    //...
   };
 
   Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
 
-  // check if the API key is valid
-  final isValid = await deepgram.isApiKeyValid();
-  print('API key is valid: $isValid');
+  // -------------------- Speech To Text --------------------
+  deepgram.listen.file(File('audio.wav')); // or .path()
+  deepgram.listen.url('https://somewhere/audio.wav');
+  deepgram.listen.bytes(List.from([1, 2, 3, 4, 5]));
 
-  // -------------------- From a file --------------------
-  File audioFile = File('audio.wav');
+  // Streaming
+  final audioStream = File('audio.wav').openRead(); // mic.stream ...
 
-  final res1 = await deepgram.listen.file(audioFile);
-  print(res1.transcript);
-
-  // -------------------- From a URL --------------------
-  final res2 = await deepgram.listen.url('https://somewhere/audio.wav');
-  print(res2.transcript);
-
-  // -------------------- From raw data --------------------
-  final res = await deepgram.listen.bytes(List.from([1, 2, 3, 4, 5]));
-  print(res.transcript);
-
-  // -------------------- From a stream  --------------------
-  // For example : from a microphone https://pub.dev/packages/record (other packages would work too as long as they provide a stream)
-  // final audioStream = await AudioRecorder().startStream(RecordConfig(
-  //   encoder: AudioEncoder.pcm16bits,
-  //   sampleRate: 16000,
-  //   numChannels: 1,
-  // ));
-
-  Stream<List<int>> audioStream = audioFile.openRead(); // mic.stream ...
-
-  Stream<DeepgramListenResult> resStream = deepgram.listen.live(audioStream);
-
-  resStream.listen((res) {
-    print(res.transcript);
-  });
-
-  // If you prefer to have more control over the stream:
-
-  final DeepgramLiveListener listener =
-      deepgram.listen.liveListener(audioStream);
-
-  listener.start();
-
-  listener.stream.listen((json) {
-    print(json);
-  });
-  listener.close();
-  // after that you can call start() again, no need to create a new transcriber :)
+  deepgram.listen.live(audioStream); // or .liveListener()
 
   // -------------------- Text to Speech --------------------
-  final dg = Deepgram(apiKey);
-  final res3 = await dg.speak.text('Hello, how are you?');
-  // then use res as you like
-  res3.data; // Uint8List of audio data
-  res3.contentType; // 'audio/wav'
+  deepgram.speak.text('Hello World');
+
+  // Streaming
+  final textStream = Stream.fromIterable(['Hello', 'World']);
+
+  deepgram.speak.live(textStream); // or .liveSpeaker()
+
+  // -------------------- Debugging --------------------
+  final isValid = await deepgram.isApiKeyValid();
+  print('API key is valid: $isValid');
 }

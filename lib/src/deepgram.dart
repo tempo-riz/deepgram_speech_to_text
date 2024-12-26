@@ -8,6 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:wav/wav.dart';
 
 export 'types.dart';
+export 'deepgram_listen.dart';
+export 'deepgram_speak.dart';
+export 'deepgram_live_listener.dart';
+export 'deepgram_live_speaker.dart';
 
 /// The Deepgram API client.
 class Deepgram {
