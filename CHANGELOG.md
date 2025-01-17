@@ -1,3 +1,6 @@
+## 3.0.3
+- removed unnecessary exports
+
 ## 3.0.2
 - Updated docs
 

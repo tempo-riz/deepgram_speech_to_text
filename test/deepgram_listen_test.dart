@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
-import 'package:deepgram_speech_to_text/src/deepgram_live_listener.dart';
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
 import 'package:universal_file/universal_file.dart';

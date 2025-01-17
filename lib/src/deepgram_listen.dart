@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
-import 'package:deepgram_speech_to_text/src/deepgram_live_listener.dart';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:universal_file/universal_file.dart';

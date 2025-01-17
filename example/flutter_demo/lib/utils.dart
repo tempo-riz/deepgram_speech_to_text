@@ -41,7 +41,7 @@ StreamController<String> getTextStreamController({int duration = 6}) {
 
   // Instead of piping the dummyAudioStream into the controller,
   // directly add data to the controller
-  Timer.periodic(Duration(seconds: 1), (timer) {
+  Timer.periodic(const Duration(seconds: 1), (timer) {
     if (!controller.isClosed) {
       controller.add(story[index]);
       index = (index + 1) % story.length;
