@@ -4,6 +4,13 @@ description: >
 version: 3.0.3
 repository: https://github.com/tempo-riz/deepgram_speech_to_text
 
+topics:
+  - deepgram
+  - speech-to-text
+  - text-to-speech
+  - streaming
+  - voice
+
 environment:
   sdk: ^3.0.0
 
