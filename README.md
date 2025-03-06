@@ -18,6 +18,8 @@ dart format .
 flutter pub publish --dry-run
 -->
 
+# Deepgram Dart
+
 ![Pub Version](https://img.shields.io/pub/v/deepgram_speech_to_text)
 ![Pub Likes](https://img.shields.io/pub/likes/deepgram_speech_to_text)
 ![Pub Monthly Downloads](https://img.shields.io/pub/dm/deepgram_speech_to_text)
