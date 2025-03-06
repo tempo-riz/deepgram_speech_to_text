@@ -17,6 +17,12 @@ dart doc
 dart format .
 flutter pub publish --dry-run
 -->
+![Pub Likes](https://img.shields.io/pub/likes/deepgram_speech_to_text)
+![Pub Points](https://img.shields.io/pub/points/deepgram_speech_to_text)
+![Pub Monthly Downloads](https://img.shields.io/pub/dm/deepgram_speech_to_text)
+
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M71BK1YJ)
 
 A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-to-Speech features on every platform.
 
