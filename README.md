@@ -26,6 +26,9 @@ flutter pub publish --dry-run
 
 A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-to-Speech features on every platform.
 
+[![Pub Version](https://img.shields.io/pub/v/deepgram_speech_to_text)](https://pub.dev/packages/deepgram_speech_to_text)
+
+
 You need something else ? Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
 ## Features
