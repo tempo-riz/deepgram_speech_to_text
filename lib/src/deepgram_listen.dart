@@ -25,8 +25,8 @@ class DeepgramListen {
       },
       body: data,
     );
-
-    return DeepgramListenResult(res.body);
+    // make sure it's utf8 encoded
+    return DeepgramListenResult(utf8.decode(res.bodyBytes));
   }
 
   /// Transcribe a local audio file.
@@ -64,7 +64,7 @@ class DeepgramListen {
       body: jsonEncode({'url': url}),
     );
 
-    return DeepgramListenResult(res.body);
+    return DeepgramListenResult(utf8.decode(res.bodyBytes));
   }
 
   /// Create a live transcriber with a start and close method.

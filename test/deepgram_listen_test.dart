@@ -10,6 +10,11 @@ void main() {
   group('[LISTEN - STT API]', () {
     final env = DotEnv()..load();
 
+    const file1 = 'assets/jfk.wav';
+    // const file2 = 'assets/chinese.wav';
+
+    const String audioFilePath = file1;
+
     final apiKey = env.getOrElse(
         "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
@@ -17,7 +22,7 @@ void main() {
     /// [simulating a live stream]
     /// read the file content once then create a stream with a loop of its content
     StreamController<List<int>> getAudioStreamController() {
-      final file = File('assets/jfk.wav');
+      final file = File(audioFilePath);
       assert(file.existsSync(), 'File does not exist');
 
       Uint8List bytes = file.readAsBytesSync();
@@ -38,24 +43,22 @@ void main() {
     }
 
     test('transcribeFromBytes', () async {
-      final file = File('assets/jfk.wav');
+      final file = File(audioFilePath);
 
       expect(file.existsSync(), isTrue);
 
       final Uint8List bytes = file.readAsBytesSync();
 
       expect(bytes.length, greaterThan(0));
-
       // final res = await deepgram.transcribeFromBytes(bytes);
       final res = await deepgram.listen.bytes(bytes);
-
       print(res.transcript);
 
       expect(res.transcript, isNotEmpty);
     });
 
     test('transcribeFromFile', () async {
-      final file = File('assets/jfk.wav');
+      final file = File(audioFilePath);
 
       expect(file.existsSync(), isTrue);
 
