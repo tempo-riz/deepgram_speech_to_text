@@ -71,7 +71,8 @@ void main() {
     });
 
     test('transcribeFromUrl', () async {
-      final url = 'https://www2.cs.uic.edu/~i101/SoundFiles/taunt.wav';
+      final url =
+          'https://raw.githubusercontent.com/tempo-riz/deepgram_speech_to_text/183bdd1ba274ed9b48fb8909703fc94d253c1f5a/assets/jfk.wav';
 
       // final res = await deepgram.transcribeFromUrl(url);
       final res = await deepgram.listen.url(url);

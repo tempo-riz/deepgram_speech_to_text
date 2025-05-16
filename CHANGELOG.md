@@ -1,3 +1,6 @@
+## 3.0.4
+- fix utf8 encoding
+
 ## 3.0.3
 - removed unnecessary exports
 
