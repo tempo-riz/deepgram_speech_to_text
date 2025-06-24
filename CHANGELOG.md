@@ -1,3 +1,6 @@
+## 3.1.0
+- allow custom `baseUrl` for Deepgram Client
+
 ## 3.0.4
 - fix utf8 encoding
 
