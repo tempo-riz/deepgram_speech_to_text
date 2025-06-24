@@ -7,9 +7,10 @@ import 'package:universal_file/universal_file.dart';
 
 /// The Speech to Text API.
 class DeepgramListen {
-  DeepgramListen(this._client);
-
-  final String _baseSttUrl = 'https://api.deepgram.com/v1/listen';
+  DeepgramListen(this._client) {
+    _baseSttUrl = '${_client.baseUrl}/listen';
+  }
+  late final String _baseSttUrl;
 
   final Deepgram _client;
 

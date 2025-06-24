@@ -6,9 +6,11 @@ import 'package:http/http.dart' as http;
 
 /// The Text to Speech API.
 class DeepgramSpeak {
-  DeepgramSpeak(this._client);
+  DeepgramSpeak(this._client) {
+    _baseTtsUrl = '${_client.baseUrl}/speak';
+  }
 
-  final String _baseTtsUrl = 'https://api.deepgram.com/v1/speak';
+  late final String _baseTtsUrl;
 
   final Deepgram _client;
 

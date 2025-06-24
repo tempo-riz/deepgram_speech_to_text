@@ -18,6 +18,7 @@ class Deepgram {
   Deepgram(
     this.apiKey, {
     this.baseQueryParams,
+    this.baseUrl = 'https://api.deepgram.com/v1',
   }) {
     _listen = DeepgramListen(this);
     _speak = DeepgramSpeak(this);
@@ -36,6 +37,11 @@ class Deepgram {
   late final DeepgramListen _listen;
   late final DeepgramSpeak _speak;
 
+  /// The base URL for the Deepgram API.
+  ///
+  /// You can change it to use a proxy or self-hosted instance for example.
+  final String baseUrl;
+
   /// Get the Text to Speech API
   DeepgramSpeak get speak => _speak;
 
@@ -48,7 +54,7 @@ class Deepgram {
   Future<bool> isApiKeyValid() async {
     http.Response res = await http.post(
       buildUrl(
-          'https://api.deepgram.com/v1/listen',
+          '$baseUrl/listen',
           {
             'language': 'fr',
           },
