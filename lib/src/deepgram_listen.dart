@@ -87,6 +87,7 @@ class DeepgramListen {
     final baseParams = mergeMaps(requiredParams, _client.baseQueryParams);
     return DeepgramLiveListener(_client.apiKey,
         inputAudioStream: audioStream,
+        isJwt: _client.isJwt,
         queryParams: mergeMaps(baseParams, queryParams));
   }
 
