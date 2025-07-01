@@ -41,7 +41,7 @@ class DeepgramLiveListener {
   Future<void> start() async {
     _wsChannel = WebSocketChannel.connect(
       buildUrl(_baseLiveUrl, null, queryParams),
-      protocols: [isJwt ? 'bearer' : 'token', apiKey],
+      protocols: [isJwt ? 'Bearer' : 'token', apiKey],
     );
 
     try {
