@@ -19,6 +19,7 @@ class Deepgram {
     this.apiKey, {
     this.baseQueryParams,
     this.baseUrl = 'https://api.deepgram.com/v1',
+    this.isJwt = false,
   }) {
     _listen = DeepgramListen(this);
     _speak = DeepgramSpeak(this);
@@ -42,6 +43,9 @@ class Deepgram {
   /// You can change it to use a proxy or self-hosted instance for example.
   final String baseUrl;
 
+  /// Whether or not the apiKey is a short-lived JWT
+  final bool isJwt;
+
   /// Get the Text to Speech API
   DeepgramSpeak get speak => _speak;
 
@@ -60,7 +64,7 @@ class Deepgram {
           },
           null),
       headers: {
-        Headers.authorization: 'Token $apiKey',
+        Headers.authorization: isJwt ? 'Bearer $apiKey' : 'Token $apiKey',
         Headers.contentType: 'audio/*',
       },
       body: getSampleAudioData(),
