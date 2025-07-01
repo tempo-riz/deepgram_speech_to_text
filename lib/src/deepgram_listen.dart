@@ -22,7 +22,7 @@ class DeepgramListen {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, _client.baseQueryParams, queryParams),
       headers: {
-        Headers.authorization: 'Token ${_client.apiKey}',
+        Headers.authorization: _client.isJwt ? 'Bearer ${_client.apiKey}' : 'Token ${_client.apiKey}',
       },
       body: data,
     );
@@ -58,7 +58,7 @@ class DeepgramListen {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, _client.baseQueryParams, queryParams),
       headers: {
-        Headers.authorization: 'Token ${_client.apiKey}',
+        Headers.authorization: _client.isJwt ? 'Bearer ${_client.apiKey}' : 'Token ${_client.apiKey}',
         Headers.contentType: 'application/json',
         Headers.accept: 'application/json',
       },
