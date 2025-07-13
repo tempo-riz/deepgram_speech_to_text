@@ -17,11 +17,12 @@ class DeepgramListen {
   /// Transcribe from raw data.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramListenResult> bytes(List<int> data, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramListenResult> bytes(List<int> data,
+      {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, queryParams),
       headers: {
-        Headers.authorization: buildAuth(_client.isJwt, _client.apiKey),
+        Headers.authorization: _client.authHeader,
       },
       body: data,
     );
@@ -32,7 +33,8 @@ class DeepgramListen {
   /// Transcribe a local audio file.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramListenResult> file(File file, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramListenResult> file(File file,
+      {Map<String, dynamic>? queryParams}) async {
     assert(file.existsSync());
     final data = await file.readAsBytes();
 
@@ -42,7 +44,8 @@ class DeepgramListen {
   /// Transcribe a local audio file from path.
   ///
   /// https://developers.deepgram.com/reference/listen-file
-  Future<DeepgramListenResult> path(String path, {Map<String, dynamic>? queryParams}) {
+  Future<DeepgramListenResult> path(String path,
+      {Map<String, dynamic>? queryParams}) {
     final f = File(path);
     return file(f, queryParams: queryParams);
   }
@@ -50,11 +53,12 @@ class DeepgramListen {
   /// Transcribe a remote audio file from URL.
   ///
   /// https://developers.deepgram.com/reference/listen-remote
-  Future<DeepgramListenResult> url(String url, {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramListenResult> url(String url,
+      {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
       buildUrl(_baseSttUrl, queryParams),
       headers: {
-        Headers.authorization: _client.isJwt ? 'Bearer ${_client.apiKey}' : 'Token ${_client.apiKey}',
+        Headers.authorization: _client.authHeader,
         Headers.contentType: 'application/json',
         Headers.accept: 'application/json',
       },
@@ -80,7 +84,9 @@ class DeepgramListen {
       'encoding': encoding,
       'sample_rate': sampleRate,
     };
-    return DeepgramLiveListener(_client.apiKey, inputAudioStream: audioStream, isJwt: _client.isJwt, queryParams: mergeMaps(requiredParams, queryParams));
+    return DeepgramLiveListener(_client,
+        inputAudioStream: audioStream,
+        queryParams: mergeMaps(requiredParams, queryParams));
   }
 
   /// Transcribe a live audio stream.
@@ -92,7 +98,8 @@ class DeepgramListen {
     String encoding = "linear16",
     int sampleRate = 16000,
   }) {
-    final transcriber = liveListener(audioStream, queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
+    final transcriber = liveListener(audioStream,
+        queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
 
     transcriber.start();
     return transcriber.stream;

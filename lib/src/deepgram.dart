@@ -58,7 +58,7 @@ class Deepgram {
         },
       ),
       headers: {
-        Headers.authorization: isJwt ? 'Bearer $apiKey' : 'Token $apiKey',
+        Headers.authorization: authHeader,
         Headers.contentType: 'audio/*',
       },
       body: getSampleAudioData(),
@@ -70,7 +70,8 @@ class Deepgram {
   /// convert to WAV format (add the WAV header)
   static Uint8List toWav(List<int> audioData, {int sampleRate = 16000}) {
     // Convert the byte data to normalized audio samples (-1.0 to 1.0 range)
-    final samples = Float64List(audioData.length ~/ 2); // 16-bit PCM => 2 bytes per sample
+    final samples =
+        Float64List(audioData.length ~/ 2); // 16-bit PCM => 2 bytes per sample
     for (var i = 0; i < audioData.length; i += 2) {
       final sample = (audioData[i] | (audioData[i + 1] << 8)).toSigned(16);
       samples[i ~/ 2] = sample / 32768.0; // Normalize to [-1.0, 1.0]

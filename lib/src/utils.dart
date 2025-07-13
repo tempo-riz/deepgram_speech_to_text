@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+
 /// Builds a URL with query parameters.
 ///
 /// Merge the base query parameters with the query parameters (base are overridden by the method's)
@@ -8,13 +10,15 @@ Uri buildUrl(String baseUrl, Map<String, dynamic>? queryParams) {
   final uri = Uri.parse(baseUrl);
 
   // make sure they are strings
-  final params = queryParams?.map((key, value) => MapEntry(key, value.toString()));
+  final params =
+      queryParams?.map((key, value) => MapEntry(key, value.toString()));
 
   return uri.replace(queryParameters: params);
 }
 
 /// Merges two maps, returning a new map. If both maps have the same key, the value from map2 is used.
-Map<String, dynamic> mergeMaps(Map<String, dynamic>? map1, Map<String, dynamic>? map2) {
+Map<String, dynamic> mergeMaps(
+    Map<String, dynamic>? map1, Map<String, dynamic>? map2) {
   return {...?map1, ...?map2};
 }
 
@@ -38,13 +42,25 @@ class Headers {
 }
 
 /// Builds the authorization header based on whether the API key is a JWT or not.
-String buildAuth(bool isJwt, String apiKey) {
+String _buildAuth(bool isJwt, String apiKey) {
   return isJwt ? 'Bearer $apiKey' : 'Token $apiKey';
 }
 
 /// Builds the authorization protocols for WebSocket connections based on whether the API key is a JWT or not.
-Iterable<String> buildAuthProtocols(bool isJwt, String apiKey) {
+Iterable<String> _buildAuthProtocols(bool isJwt, String apiKey) {
   return [isJwt ? 'Bearer' : 'token', apiKey];
+}
+
+extension ClientExt on Deepgram {
+  /// Builds the authorization protocols for WebSocket connections.
+  Iterable<String> get authProtocols {
+    return _buildAuthProtocols(isJwt, apiKey);
+  }
+
+  /// Builds the authorization header for HTTP requests.
+  String get authHeader {
+    return _buildAuth(isJwt, apiKey);
+  }
 }
 
 /// Get a 1 sec duration sample audio data encoded in base64.
