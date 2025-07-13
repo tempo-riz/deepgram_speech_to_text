@@ -32,7 +32,7 @@ Map<String, dynamic> baseParams = {
 
 // make sure to add your API key in the .env file (which is added in the .gitignore and pubspect.yaml's assets)
 final apiKey = dotenv.get("DEEPGRAM_API_KEY");
-Deepgram deepgram = Deepgram(apiKey, baseQueryParams: baseParams);
+Deepgram deepgram = Deepgram(apiKey);
 
 void checkApiKey() async {
   debugPrint('Checking API key...');
@@ -109,11 +109,7 @@ void stopStream() async {
 }
 
 void speakFromText() async {
-  Deepgram deepgramTTS = Deepgram(apiKey, baseQueryParams: {
-    'model': 'aura-asteria-en',
-    'encoding': "linear16",
-    'container': "wav",
-  });
+  Deepgram deepgramTTS = Deepgram(apiKey);
   final res = await deepgramTTS.speak.text(
     "hello, how are you today ?",
   );
@@ -126,15 +122,14 @@ void speakFromText() async {
 }
 
 void speakFromStream() async {
-  Deepgram deepgramTTS = Deepgram(apiKey, baseQueryParams: {
-    // 'model': 'aura-asteria-en',
-    // 'encoding': "linear16",
-    // 'sample_rate': 48000,
-    // 'container': "wav",
-  });
+  Deepgram deepgramTTS = Deepgram(apiKey);
 
   final textSourceController = getTextStreamController(duration: 6);
-  final stream = deepgramTTS.speak.live(textSourceController.stream);
+  final stream = deepgramTTS.speak.live(textSourceController.stream, queryParams: {
+    'model': 'aura-asteria-en',
+    'encoding': "linear16",
+    'container': "wav",
+  });
 
   final List<Uint8List> audioResults = [];
   int index = 0;
@@ -144,8 +139,7 @@ void speakFromStream() async {
   void playNext() async {
     if (index < audioResults.length) {
       final data = audioResults[index++];
-      debugPrint(
-          'Playing audio $index / ${audioResults.length} (${data.lengthInBytes} bytes)');
+      debugPrint('Playing audio $index / ${audioResults.length} (${data.lengthInBytes} bytes)');
       await player.play(BytesSource(Deepgram.toWav(data)));
 
       return;
@@ -188,23 +182,17 @@ class MainApp extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                    onPressed: checkApiKey, child: Text('Check Api Key')),
+                ElevatedButton(onPressed: checkApiKey, child: Text('Check Api Key')),
                 Divider(),
                 ElevatedButton(onPressed: fromFile, child: Text('From File')),
                 ElevatedButton(onPressed: fromUrl, child: Text('From Url')),
                 ElevatedButton(onPressed: fromBytes, child: Text('From Bytes')),
                 Divider(),
-                ElevatedButton(
-                    onPressed: startStream, child: Text('Start Stream')),
-                ElevatedButton(
-                    onPressed: stopStream, child: Text('Stop Stream')),
+                ElevatedButton(onPressed: startStream, child: Text('Start Stream')),
+                ElevatedButton(onPressed: stopStream, child: Text('Stop Stream')),
                 Divider(),
-                ElevatedButton(
-                    onPressed: speakFromText, child: Text('Speak From Text')),
-                ElevatedButton(
-                    onPressed: speakFromStream,
-                    child: Text('Speak From Stream')),
+                ElevatedButton(onPressed: speakFromText, child: Text('Speak From Text')),
+                ElevatedButton(onPressed: speakFromStream, child: Text('Speak From Stream')),
               ],
             ),
           ),

@@ -4,23 +4,21 @@ import 'dart:typed_data';
 /// Builds a URL with query parameters.
 ///
 /// Merge the base query parameters with the query parameters (base are overridden by the method's)
-Uri buildUrl(String baseUrl, Map<String, dynamic>? baseQueryParams,
-    Map<String, dynamic>? queryParams) {
+Uri buildUrl(String baseUrl, Map<String, dynamic>? queryParams) {
   final uri = Uri.parse(baseUrl);
 
-  final Map<String, String> mergedQueryParams =
-      mergeMaps(baseQueryParams, queryParams)
-          .map((key, value) => MapEntry(key, value.toString()));
+  // make sure they are strings
+  final params = queryParams?.map((key, value) => MapEntry(key, value.toString()));
 
-  return uri.replace(queryParameters: mergedQueryParams);
+  return uri.replace(queryParameters: params);
 }
 
 /// Merges two maps, returning a new map. If both maps have the same key, the value from map2 is used.
-Map<String, dynamic> mergeMaps(
-    Map<String, dynamic>? map1, Map<String, dynamic>? map2) {
+Map<String, dynamic> mergeMaps(Map<String, dynamic>? map1, Map<String, dynamic>? map2) {
   return {...?map1, ...?map2};
 }
 
+/// Converts a string to UTF-8 encoding, handling any exceptions that may occur.
 String toUt8(String text) {
   if (text.isEmpty) {
     return text;
@@ -37,6 +35,16 @@ class Headers {
   static const authorization = "authorization";
   static const contentType = "content-type";
   static const accept = "accept";
+}
+
+/// Builds the authorization header based on whether the API key is a JWT or not.
+String buildAuth(bool isJwt, String apiKey) {
+  return isJwt ? 'Bearer $apiKey' : 'Token $apiKey';
+}
+
+/// Builds the authorization protocols for WebSocket connections based on whether the API key is a JWT or not.
+Iterable<String> buildAuthProtocols(bool isJwt, String apiKey) {
+  return [isJwt ? 'Bearer' : 'token', apiKey];
 }
 
 /// Get a 1 sec duration sample audio data encoded in base64.

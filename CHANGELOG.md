@@ -1,3 +1,7 @@
+## 4.0.0
+- **Breaking change**: Remove baseParams from `DeepgramClient` since it creates confusion.
+- Support using short-lived JWT tokens instead of API KEY (thanks @danielmahon)
+
 ## 3.1.0
 - allow custom `baseUrl` for Deepgram Client
 

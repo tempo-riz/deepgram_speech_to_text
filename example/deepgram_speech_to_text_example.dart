@@ -13,10 +13,10 @@ void main() async {
     'punctuation': true,
   };
 
-  Deepgram deepgram = Deepgram(apiKey, baseQueryParams: params);
+  Deepgram deepgram = Deepgram(apiKey);
 
   // -------------------- Speech To Text --------------------
-  deepgram.listen.file(File('audio.wav')); // or .path()
+  deepgram.listen.file(File('audio.wav'), queryParams: params); // or .path()
   deepgram.listen.url('https://somewhere/audio.wav');
   deepgram.listen.bytes(List.from([1, 2, 3, 4, 5]));
 

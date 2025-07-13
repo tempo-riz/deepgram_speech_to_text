@@ -13,25 +13,12 @@ void main() {
 
       expect(mergedMap, {'key1': 'value1', 'key2': 'value3', 'key3': 'value4'});
     });
-    test('buildUrl', () {
-      final url = buildUrl('https://api.deepgram.com/v1/listen', {
-        'model': 'nova-2-general',
-        'version': 'latest'
-      }, {
-        'model': 'nova-2-meeting', //override the model
-        'filler_words': false,
-        'punctuation': true,
-      });
-      expect(url.toString(),
-          'https://api.deepgram.com/v1/listen?model=nova-2-meeting&version=latest&filler_words=false&punctuation=true');
-    });
   });
 
   group('[API CLIENT]', () {
     final env = DotEnv()..load();
 
-    final apiKey = env.getOrElse(
-        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     test('isApiKeyValid', () async {

@@ -8,8 +8,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 /// Class used to transcribe live audio streams.
 class DeepgramLiveListener {
   /// Create a live transcriber with a start and close method
-  DeepgramLiveListener(this.apiKey,
-      {required this.inputAudioStream, this.queryParams, this.isJwt = false});
+  DeepgramLiveListener(this.apiKey, {required this.inputAudioStream, this.queryParams, this.isJwt = false});
 
   /// if transcriber was closed
   bool _isClosed = false;
@@ -32,16 +31,15 @@ class DeepgramLiveListener {
   final bool isJwt;
 
   final String _baseLiveUrl = 'wss://api.deepgram.com/v1/listen';
-  final StreamController<DeepgramListenResult> _outputTranscriptStream =
-      StreamController<DeepgramListenResult>();
+  final StreamController<DeepgramListenResult> _outputTranscriptStream = StreamController<DeepgramListenResult>();
   late WebSocketChannel _wsChannel;
   Timer? _keepAliveTimer;
 
   /// Start the transcription process.
   Future<void> start() async {
     _wsChannel = WebSocketChannel.connect(
-      buildUrl(_baseLiveUrl, null, queryParams),
-      protocols: [isJwt ? 'Bearer' : 'token', apiKey],
+      buildUrl(_baseLiveUrl, queryParams),
+      protocols: buildAuthProtocols(isJwt, apiKey),
     );
 
     try {

@@ -17,7 +17,6 @@ export 'deepgram_live_speaker.dart';
 class Deepgram {
   Deepgram(
     this.apiKey, {
-    this.baseQueryParams,
     this.baseUrl = 'https://api.deepgram.com/v1',
     this.isJwt = false,
   }) {
@@ -28,13 +27,6 @@ class Deepgram {
   /// your Deepgram API key
   final String apiKey;
 
-  /// Deepgram parameters
-  ///
-  /// List of params here : https://developers.deepgram.com/reference/listen-file
-  ///
-  /// (if same params are present in both baseQueryParams and queryParams, the value from queryParams is used)
-  final Map<String, dynamic>? baseQueryParams;
-
   late final DeepgramListen _listen;
   late final DeepgramSpeak _speak;
 
@@ -44,6 +36,8 @@ class Deepgram {
   final String baseUrl;
 
   /// Whether or not the apiKey is a short-lived JWT
+  ///
+  /// https://developers.deepgram.com/reference/token-based-auth-api/grant-token
   final bool isJwt;
 
   /// Get the Text to Speech API
@@ -58,11 +52,11 @@ class Deepgram {
   Future<bool> isApiKeyValid() async {
     http.Response res = await http.post(
       buildUrl(
-          '$baseUrl/listen',
-          {
-            'language': 'fr',
-          },
-          null),
+        '$baseUrl/listen',
+        {
+          'language': 'fr',
+        },
+      ),
       headers: {
         Headers.authorization: isJwt ? 'Bearer $apiKey' : 'Token $apiKey',
         Headers.contentType: 'audio/*',
@@ -76,8 +70,7 @@ class Deepgram {
   /// convert to WAV format (add the WAV header)
   static Uint8List toWav(List<int> audioData, {int sampleRate = 16000}) {
     // Convert the byte data to normalized audio samples (-1.0 to 1.0 range)
-    final samples =
-        Float64List(audioData.length ~/ 2); // 16-bit PCM => 2 bytes per sample
+    final samples = Float64List(audioData.length ~/ 2); // 16-bit PCM => 2 bytes per sample
     for (var i = 0; i < audioData.length; i += 2) {
       final sample = (audioData[i] | (audioData[i + 1] << 8)).toSigned(16);
       samples[i ~/ 2] = sample / 32768.0; // Normalize to [-1.0, 1.0]

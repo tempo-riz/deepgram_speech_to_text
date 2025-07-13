@@ -17,12 +17,11 @@ class DeepgramSpeak {
   /// Convert text to speech.
   ///
   /// https://developers.deepgram.com/reference/text-to-speech-api
-  Future<DeepgramSpeakResult> text(String text,
-      {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramSpeakResult> text(String text, {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
-      buildUrl(_baseTtsUrl, _client.baseQueryParams, queryParams),
+      buildUrl(_baseTtsUrl, queryParams),
       headers: {
-        Headers.authorization: _client.isJwt ? 'Bearer ${_client.apiKey}' : 'Token ${_client.apiKey}',
+        Headers.authorization: buildAuth(_client.isJwt, _client.apiKey),
         Headers.contentType: 'application/json',
       },
       body: jsonEncode({
@@ -52,11 +51,7 @@ class DeepgramSpeak {
       'sample_rate': sampleRate,
     };
 
-    final baseParams = mergeMaps(requiredParams, _client.baseQueryParams);
-
-    return DeepgramLiveSpeaker(_client.apiKey,
-        inputTextStream: audioStream,
-        queryParams: mergeMaps(baseParams, queryParams));
+    return DeepgramLiveSpeaker(_client.apiKey, inputTextStream: audioStream, queryParams: mergeMaps(requiredParams, queryParams));
   }
 
   /// Convert live text to speech. (currently only wav is supported)
@@ -68,8 +63,7 @@ class DeepgramSpeak {
     String encoding = 'linear16',
     int sampleRate = 16000,
   }) {
-    DeepgramLiveSpeaker transcriber = liveSpeaker(audioStream,
-        queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
+    DeepgramLiveSpeaker transcriber = liveSpeaker(audioStream, queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
 
     transcriber.start();
 
