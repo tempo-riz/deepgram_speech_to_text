@@ -63,27 +63,27 @@ All you need is a Deepgram API key. You can get a free one by signing up on [Dee
 
 ## Usage
 
-First create the client with optional parameters
+First create the client with your api key.
 ```dart
-String apiKey = 'your_api_key';
-
-// you can pass params in client's baseQueryParams or in every method's queryParams
-Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
-  'model': 'nova-2-general',
-  'detect_language': true,
-  'filler_words': false,
-  'punctuation': true,
-  // more options here : https://developers.deepgram.com/reference/listen-file
-});
+Deepgram deepgram = Deepgram('your_api_key');
 ```
 Then you can call the methods you need under the propper listen or speak subclass:
 
 ```dart
 // Speech to text
-DeepgramListenResult res = await deepgram.listen.file(File('audio.wav'));
+DeepgramListenResult res = await deepgram.listen.file(File('audio.wav'), queryParams: {
+  'model': 'nova-2-general',
+  'detect_language': true,
+  'filler_words': false,
+  'punctuation': true,
+  // options here : https://developers.deepgram.com/reference/listen-file
+});
 
 // Text to speech
-DeepgramSpeakResult res = await deepgram.speak.text('Hello world');
+DeepgramSpeakResult res = await deepgram.speak.text('Hello world', queryParams: {
+  'model': 'aura-asteria-en'
+  // options here : https://developers.deepgram.com/reference/text-to-speech-api
+});
 ```
 
 ## STT Result
@@ -118,24 +118,22 @@ Stream<List<int>> micStream = await AudioRecorder().startStream(RecordConfig(
       numChannels: 1,
 ));
 
-final streamParams = {
+final sttStreamParams = {
   'detect_language': false, // not supported by streaming API
   'language': 'en',
   // must specify encoding and sample_rate according to the audio stream
   'encoding': 'linear16',
   'sample_rate': 16000,
 };
-
-Deepgram deepgram = Deepgram(apiKey, baseQueryParams: streamParams);
 ```
 
 then you got 2 options depending if you want to have more control over the stream or not :
 ```dart
 // 1. you want the stream to manage itself automatically
-Stream<DeepgramListenResult> stream = deepgram.listen.live(micStream);
+Stream<DeepgramListenResult> stream = deepgram.listen.live(micStream, queryParams: sttStreamParams);
 
 // 2. you want to manage the stream manually
-DeepgramLiveListener listener = deepgram.liveListener(micStream);
+DeepgramLiveListener listener = deepgram.liveListener(micStream, queryParams: sttStreamParams);
 listener.stream.listen((res) {
     print(res.transcript);
 });
@@ -153,22 +151,22 @@ listener.close();
 
 ### Text to speech
 ```dart
-Deepgram deepgram = Deepgram(apiKey, baseQueryParams: {
+final ttsStreamParams = {
   'model': 'aura-asteria-en',
   'encoding': "linear16",
   'sample_rate': 16000,
 // options here: https://developers.deepgram.com/reference/text-to-speech-api
-});
+};
 ```
 
 then again you got 2 options:
 ```dart
 final textStream = ...
 // 1. you want the stream to manage itself automatically
-Stream<DeepgramSpeakResult> stream = deepgram.speak.live(textStream);
+Stream<DeepgramSpeakResult> stream = deepgram.speak.live(textStream, queryParams: ttsStreamParams);
 
 // 2. you want to manage the stream manually
-DeepgramLiveSpeaker speaker = deepgram.liveListener(textStream);
+DeepgramLiveSpeaker speaker = deepgram.liveListener(textStream, queryParams: ttsStreamParams);
 speaker.stream.listen((res) {
     print(res);
     // if you want to use the audio, simplest way is to use Deepgram.toWav(res.data) !
