@@ -75,7 +75,7 @@ DeepgramListenResult res = await deepgram.listen.file(File('audio.wav'), queryPa
   'model': 'nova-2-general',
   'detect_language': true,
   'filler_words': false,
-  'punctuation': true,
+  'punctuate': true,
   // options here : https://developers.deepgram.com/reference/listen-file
 });
 
