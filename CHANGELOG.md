@@ -1,3 +1,6 @@
+## 4.0.1
+- avoid JSON parsing multiple times in DeepgramListenResult
+
 ## 4.0.0
 - **Breaking change**: Remove baseParams from `DeepgramClient` since it creates confusion.
 - Support using short-lived JWT tokens instead of API KEY (thanks @danielmahon)
