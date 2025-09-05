@@ -5,13 +5,13 @@ import 'package:deepgram_speech_to_text/src/utils.dart';
 
 /// Represents the result of a STT request.
 class DeepgramListenResult {
-  DeepgramListenResult(this.json, {this.error});
+  DeepgramListenResult(this.json, {this.error}) : map = jsonDecode(json);
 
   /// The JSON string returned by the Deepgram API.
   final String json;
 
   /// The JSON string parsed into a map.
-  Map<String, dynamic> get map => jsonDecode(json);
+  final Map<String, dynamic> map;
 
   /// The transcription from the JSON string. (maybe empty, check for type)
   // sync : ['results']['channels'][0]['alternatives'][0]['transcript']
