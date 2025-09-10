@@ -50,7 +50,9 @@ class DeepgramListenResult {
   List<DeepgramWord> get words {
     final wordsDynamic = _firstAlternative?['words'] as List<dynamic>?;
     if (wordsDynamic == null) return [];
-    return wordsDynamic.map((e) => DeepgramWord(e as Map<String, dynamic>)).toList();
+    return wordsDynamic
+        .map((e) => DeepgramWord(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// Gets the duration of the result.

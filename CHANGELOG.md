@@ -1,5 +1,7 @@
 ## 4.1.0
-- improve
+- improve models (thanks @jbienzss)
+- cleaner error handling in websockets (handle errors in the stream)
+  
 ## 4.0.1
 - avoid JSON parsing multiple times in DeepgramListenResult
 

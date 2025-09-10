@@ -10,13 +10,15 @@ Uri buildUrl(String baseUrl, Map<String, dynamic>? queryParams) {
   final uri = Uri.parse(baseUrl);
 
   // make sure they are strings
-  final params = queryParams?.map((key, value) => MapEntry(key, value.toString()));
+  final params =
+      queryParams?.map((key, value) => MapEntry(key, value.toString()));
 
   return uri.replace(queryParameters: params);
 }
 
 /// Merges two maps, returning a new map. If both maps have the same key, the value from map2 is used.
-Map<String, dynamic> mergeMaps(Map<String, dynamic>? map1, Map<String, dynamic>? map2) {
+Map<String, dynamic> mergeMaps(
+    Map<String, dynamic>? map1, Map<String, dynamic>? map2) {
   return {...?map1, ...?map2};
 }
 

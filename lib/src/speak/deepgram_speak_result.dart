@@ -17,5 +17,6 @@ class DeepgramSpeakResult {
   });
 
   @override
-  String toString() => '$runtimeType -> metadata: $metadata, data length: ${data?.length}';
+  String toString() =>
+      '$runtimeType -> metadata: $metadata, data length: ${data?.length}';
 }
