@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+import 'package:deepgram_speech_to_text/src/speak/deepgram_speak_result.dart';
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
 

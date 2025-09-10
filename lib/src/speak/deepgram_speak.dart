@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+import 'package:deepgram_speech_to_text/src/speak/deepgram_speak_result.dart';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,8 +18,7 @@ class DeepgramSpeak {
   /// Convert text to speech.
   ///
   /// https://developers.deepgram.com/reference/text-to-speech-api
-  Future<DeepgramSpeakResult> text(String text,
-      {Map<String, dynamic>? queryParams}) async {
+  Future<DeepgramSpeakResult> text(String text, {Map<String, dynamic>? queryParams}) async {
     http.Response res = await http.post(
       buildUrl(_baseTtsUrl, queryParams),
       headers: {
@@ -26,7 +26,7 @@ class DeepgramSpeak {
         Headers.contentType: 'application/json',
       },
       body: jsonEncode({
-        'text': toUt8(text),
+        'text': toUtf8(text),
       }),
     );
 
@@ -52,9 +52,7 @@ class DeepgramSpeak {
       'sample_rate': sampleRate,
     };
 
-    return DeepgramLiveSpeaker(_client,
-        inputTextStream: audioStream,
-        queryParams: mergeMaps(requiredParams, queryParams));
+    return DeepgramLiveSpeaker(_client, inputTextStream: audioStream, queryParams: mergeMaps(requiredParams, queryParams));
   }
 
   /// Convert live text to speech. (currently only wav is supported)
@@ -66,8 +64,7 @@ class DeepgramSpeak {
     String encoding = 'linear16',
     int sampleRate = 16000,
   }) {
-    DeepgramLiveSpeaker transcriber = liveSpeaker(audioStream,
-        queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
+    DeepgramLiveSpeaker transcriber = liveSpeaker(audioStream, queryParams: queryParams, encoding: encoding, sampleRate: sampleRate);
 
     transcriber.start();
 

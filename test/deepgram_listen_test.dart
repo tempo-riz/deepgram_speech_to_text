@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+import 'package:deepgram_speech_to_text/src/listen/deepgram_listen_result.dart';
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
 import 'package:universal_file/universal_file.dart';
@@ -15,8 +16,7 @@ void main() {
 
     const String audioFilePath = file1;
 
-    final apiKey = env.getOrElse(
-        "DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
+    final apiKey = env.getOrElse("DEEPGRAM_API_KEY", () => throw Exception("No API Key found"));
     final deepgram = Deepgram(apiKey);
 
     /// [simulating a live stream]
@@ -71,8 +71,7 @@ void main() {
     });
 
     test('transcribeFromUrl', () async {
-      final url =
-          'https://raw.githubusercontent.com/tempo-riz/deepgram_speech_to_text/183bdd1ba274ed9b48fb8909703fc94d253c1f5a/assets/jfk.wav';
+      final url = 'https://raw.githubusercontent.com/tempo-riz/deepgram_speech_to_text/183bdd1ba274ed9b48fb8909703fc94d253c1f5a/assets/jfk.wav';
 
       // final res = await deepgram.transcribeFromUrl(url);
       final res = await deepgram.listen.url(url);
@@ -85,8 +84,7 @@ void main() {
     test('createLiveTranscriber', () async {
       final controller = getAudioStreamController();
       print("creating transcriber");
-      final DeepgramLiveListener transcriber =
-          deepgram.listen.liveListener(controller.stream);
+      final DeepgramLiveListener transcriber = deepgram.listen.liveListener(controller.stream);
 
       String transcript = '';
 
@@ -108,8 +106,7 @@ void main() {
       print("pausing (waiting 14 seconds)");
       transcriber.pause();
 
-      await Future.delayed(
-          Duration(seconds: 14)); // would normally close after 10 seconds
+      await Future.delayed(Duration(seconds: 14)); // would normally close after 10 seconds
       print("resuming");
       transcriber.resume();
 
@@ -125,8 +122,7 @@ void main() {
       final controller = getAudioStreamController();
       print("creating transcriber");
 
-      final Stream<DeepgramListenResult> stream =
-          deepgram.listen.live(controller.stream);
+      final Stream<DeepgramListenResult> stream = deepgram.listen.live(controller.stream);
 
       String transcript = '';
 

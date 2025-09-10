@@ -1,3 +1,5 @@
+## 4.1.0
+- improve
 ## 4.0.1
 - avoid JSON parsing multiple times in DeepgramListenResult
 

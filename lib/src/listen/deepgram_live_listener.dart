@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+import 'package:deepgram_speech_to_text/src/listen/deepgram_listen_result.dart';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -63,8 +64,6 @@ class DeepgramLiveListener {
       }
     }, onDone: () {
       close();
-    }, onError: (error) {
-      _outputTranscriptStream.addError(DeepgramListenResult('', error: error));
     });
 
     // listen to the input audio stream and send it to the channel if it's still open

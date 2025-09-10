@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
+import 'package:deepgram_speech_to_text/src/speak/deepgram_speak_result.dart';
 import 'package:deepgram_speech_to_text/src/utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -58,8 +59,6 @@ class DeepgramLiveSpeaker {
       }
     }, onDone: () {
       close();
-    }, onError: (error) {
-      _outputAudioStream.addError(DeepgramSpeakResult(error: error));
     });
 
     // listen to the input text stream and send it to the channel if it's still open
@@ -144,7 +143,6 @@ class DeepgramLiveSpeaker {
       }
     } catch (e) {
       print('Error in _handleWebSocketMessage: $e');
-      return _outputAudioStream.addError(DeepgramSpeakResult(error: e));
     }
   }
 
