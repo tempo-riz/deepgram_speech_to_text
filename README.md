@@ -31,8 +31,7 @@ A Deepgram client for Dart and Flutter, supporting all Speech-to-Text and Text-t
 
 
 
-
-You need something else ? Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
+Feel free to create issues, contribute to this project or to ask for new features on [GitHub](https://github.com/tempo-riz/deepgram_speech_to_text) !
 
 ## Features
 
@@ -67,6 +66,8 @@ First create the client with your api key.
 ```dart
 Deepgram deepgram = Deepgram('your_api_key');
 ```
+
+## Pre-recorded
 Then you can call the methods you need under the propper listen or speak subclass:
 
 ```dart
@@ -85,27 +86,6 @@ DeepgramSpeakResult res = await deepgram.speak.text('Hello world', queryParams: 
   // options here : https://developers.deepgram.com/reference/text-to-speech-api
 });
 ```
-
-## STT Result
-All STT methods return a `DeepgramListenResult` object with the following properties : 
-```dart
-class DeepgramListenResult {
-  final String json; // raw json response
-  final Map<String, dynamic> map; // parsed json response into a map
-  final String? transcript; // the transcript extracted from the response
-  final String? type; // the response type (Result, Metadata, ...) non-null for streaming
-}
-```
-
-## TTS Result
-All TTS methods return a `DeepgramSpeakResult` object with the following properties : 
-```dart
-class DeepgramSpeakResult {
-  final Uint8List? data; // raw audio data
-  final Map<String, dynamic>? metadata; /// The headers or metadata if streaming
-}
-```
-
 
 ## Streaming
 ### Speech to text
