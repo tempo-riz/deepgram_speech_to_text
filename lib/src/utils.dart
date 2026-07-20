@@ -9,9 +9,10 @@ import 'package:deepgram_speech_to_text/deepgram_speech_to_text.dart';
 Uri buildUrl(String baseUrl, Map<String, dynamic>? queryParams) {
   final uri = Uri.parse(baseUrl);
 
-  // make sure they are strings
-  final params =
-      queryParams?.map((key, value) => MapEntry(key, value.toString()));
+  // process params as String or a list of String values
+  final params = queryParams?.map((key, value) => value is List
+      ? MapEntry(key, value.map((e) => e.toString()).toList())
+      : MapEntry(key, value.toString()));
 
   return uri.replace(queryParameters: params);
 }
