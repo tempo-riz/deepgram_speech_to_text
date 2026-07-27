@@ -70,6 +70,9 @@ class DeepgramListenResult {
   /// Gets whether the result is a final endpoint result.
   bool get speechFinal => map['speech_final'] as bool? ?? false;
 
+  /// Gets the status of finalization process. Typically occurs when there is a noticeable amount of audio buffered in the server.
+  bool get fromFinalize => map['from_finalize'] as bool? ?? false;
+
   /// Gets the start time of the result.
   double get start => (map['start'] as num?)?.toDouble() ?? 0.0;
 

@@ -130,6 +130,22 @@ class DeepgramLiveListener {
     _isPaused = true;
   }
 
+  /// Use the Finalize message to flush the WebSocket stream.
+  ///
+  /// This forces the server to immediately process any unprocessed audio data and return the final transcription results.
+  /// You can optionally specify a channel field to finalize a specific channel.
+  /// If the channel field is omitted, all channels in the audio will be finalized. Note that channel indexing starts at 0.
+  void finalize({int? channel}) {
+    try {
+      _wsChannel.sink.add(jsonEncode({
+        'type': 'Finalize',
+        if (channel != null) 'channel': channel,
+      }));
+    } catch (e) {
+      print('Finalize error: $e');
+    }
+  }
+
   /// Resume the transcription process.
   void resume() {
     if (!_isPaused) return;
